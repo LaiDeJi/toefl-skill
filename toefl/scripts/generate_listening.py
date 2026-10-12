@@ -434,8 +434,16 @@ def write_exercise_meta(content: dict, output_dir: str, ex_type: str):
     """Write transcript, questions, and metadata files."""
     os.makedirs(output_dir, exist_ok=True)
 
+    is_choose_response = "prompt" in content and "options" in content
+
     # Transcript
     transcript = f"# {content.get('title', ex_type)}\n\n"
+    if is_choose_response:
+        # Choose a Response: the record has no dialogue/lecture text to show.
+        # The transcript carries the statement; options live in questions.md.
+        name = VOICES[content["speaker"]]["desc"].split(",")[0]
+        transcript += f"**{name}:** {content['prompt']}\n\n"
+        transcript += "The answer options are in `questions.md`.\n"
     if "context" in content:
         transcript += f"*{content['context']}*\n\n"
     if "lines" in content:
@@ -450,8 +458,22 @@ def write_exercise_meta(content: dict, output_dir: str, ex_type: str):
         f.write(transcript)
 
     # Questions
-    questions = content.get("questions", content.get("questions", []))
-    if questions:
+    questions = [content] if is_choose_response else content.get("questions", [])
+    if is_choose_response:
+        q_md = f"# Questions — {content.get('title', ex_type)}\n\n"
+        q_md += f"**Difficulty:** {'⭐' * content.get('difficulty', 2)}\n\n"
+        q_md += "Choose the best response to the statement you heard.\n\n"
+        for opt in content["options"]:
+            q_md += f"- {opt}\n"
+        q_md += "\n<details><summary>Answer</summary>"
+        q_md += str(content.get("answer", ""))
+        if content.get("explanation"):
+            q_md += f" — {content['explanation']}"
+        q_md += "</details>\n"
+
+        with open(os.path.join(output_dir, "questions.md"), "w", encoding="utf-8") as f:
+            f.write(q_md)
+    elif questions:
         q_md = f"# Questions — {content.get('title', '')}\n\n"
         q_md += f"**Difficulty:** {'⭐' * content.get('difficulty', 2)}\n\n"
         for j, q in enumerate(questions, 1):
@@ -469,7 +491,7 @@ def write_exercise_meta(content: dict, output_dir: str, ex_type: str):
     # Metadata
     meta = {
         "type": ex_type,
-        "title": content.get("title", ""),
+        "title": content.get("title", ex_type),
         "difficulty": content.get("difficulty", 2),
         "question_count": len(questions),
     }
