@@ -21,8 +21,13 @@ Usage:
 import argparse
 import json
 import os
+import sys
 import random
 from pathlib import Path
+
+# Add parent dir for local imports
+sys.path.insert(0, os.path.dirname(__file__))
+from run_guard import MANIFEST_NAME, commit_manifest, content_hash
 
 
 # ── Complete the Words ────────────────────────────────────────
@@ -215,12 +220,20 @@ ACADEMIC_PASSAGES = [
 
 def generate_complete_words(items: list, output_dir: str, difficulty: list):
     """Generate Complete the Words exercises."""
+    filtered = [it for it in items if it["difficulty"] in difficulty]
+    if not filtered:
+        print("⚠️ Complete the Words：此難度範圍沒有素材，未改動任何既有練習")
+        return
+
     cw_dir = os.path.join(output_dir, "complete-words")
     os.makedirs(cw_dir, exist_ok=True)
+    m_path = os.path.join(cw_dir, MANIFEST_NAME)
+    entry_files = ["exercise.md", "answers.md", "meta.json"]
 
-    filtered = [it for it in items if it["difficulty"] in difficulty]
+    entries = {}
     for i, item in enumerate(filtered, 1):
-        ex_dir = os.path.join(cw_dir, f"exercise-{i:02d}")
+        folder = f"exercise-{i:02d}"
+        ex_dir = os.path.join(cw_dir, folder)
         os.makedirs(ex_dir, exist_ok=True)
 
         # Exercise file (with blanks)
@@ -241,17 +254,29 @@ def generate_complete_words(items: list, output_dir: str, difficulty: list):
         with open(os.path.join(ex_dir, "meta.json"), "w", encoding="utf-8") as f:
             json.dump({"type": "complete-words", "difficulty": item["difficulty"], "word_count": len(item["answers"])}, f, indent=2)
 
+        entries[folder] = {"hash": content_hash(item), "files": entry_files}
+
+    for name in commit_manifest(m_path, "complete-words", cw_dir, entries, difficulty):
+        print(f"🗑️ 已移除先前執行留下的過期練習：complete-words/{name}")
     print(f"✅ Complete the Words：{len(filtered)} exercises")
 
 
 def generate_daily_life(items: list, output_dir: str, difficulty: list):
     """Generate Read in Daily Life exercises."""
+    filtered = [it for it in items if it["difficulty"] in difficulty]
+    if not filtered:
+        print("⚠️ Read in Daily Life：此難度範圍沒有素材，未改動任何既有練習")
+        return
+
     dl_dir = os.path.join(output_dir, "daily-life")
     os.makedirs(dl_dir, exist_ok=True)
+    m_path = os.path.join(dl_dir, MANIFEST_NAME)
+    entry_files = ["exercise.md"]
 
-    filtered = [it for it in items if it["difficulty"] in difficulty]
+    entries = {}
     for i, item in enumerate(filtered, 1):
-        ex_dir = os.path.join(dl_dir, f"exercise-{i:02d}")
+        folder = f"exercise-{i:02d}"
+        ex_dir = os.path.join(dl_dir, folder)
         os.makedirs(ex_dir, exist_ok=True)
 
         with open(os.path.join(ex_dir, "exercise.md"), "w", encoding="utf-8") as f:
@@ -265,17 +290,29 @@ def generate_daily_life(items: list, output_dir: str, difficulty: list):
                     f.write(f"- {opt}\n")
                 f.write(f"\n<details><summary>Answer</summary>{q['ans']}</details>\n\n")
 
+        entries[folder] = {"hash": content_hash(item), "files": entry_files}
+
+    for name in commit_manifest(m_path, "daily-life", dl_dir, entries, difficulty):
+        print(f"🗑️ 已移除先前執行留下的過期練習：daily-life/{name}")
     print(f"✅ Read in Daily Life：{len(filtered)} exercises")
 
 
 def generate_academic_passages(items: list, output_dir: str, difficulty: list):
     """Generate Academic Passage exercises."""
+    filtered = [it for it in items if it["difficulty"] in difficulty]
+    if not filtered:
+        print("⚠️ Academic Passages：此難度範圍沒有素材，未改動任何既有練習")
+        return
+
     ap_dir = os.path.join(output_dir, "academic-passages")
     os.makedirs(ap_dir, exist_ok=True)
+    m_path = os.path.join(ap_dir, MANIFEST_NAME)
+    entry_files = ["exercise.md", "meta.json"]
 
-    filtered = [it for it in items if it["difficulty"] in difficulty]
+    entries = {}
     for i, item in enumerate(filtered, 1):
-        ex_dir = os.path.join(ap_dir, f"passage-{i:02d}")
+        folder = f"passage-{i:02d}"
+        ex_dir = os.path.join(ap_dir, folder)
         os.makedirs(ex_dir, exist_ok=True)
 
         with open(os.path.join(ex_dir, "exercise.md"), "w", encoding="utf-8") as f:
@@ -294,6 +331,10 @@ def generate_academic_passages(items: list, output_dir: str, difficulty: list):
             json.dump({"type": "academic-passage", "title": item["title"], "subject": item["subject"],
                        "difficulty": item["difficulty"], "word_count": word_count, "question_count": len(item["questions"])}, f, indent=2)
 
+        entries[folder] = {"hash": content_hash(item), "files": entry_files}
+
+    for name in commit_manifest(m_path, "academic-passage", ap_dir, entries, difficulty):
+        print(f"🗑️ 已移除先前執行留下的過期練習：academic-passages/{name}")
     print(f"✅ Academic Passages：{len(filtered)} exercises")
 
 

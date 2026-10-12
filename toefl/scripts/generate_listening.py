@@ -31,6 +31,10 @@ from audio_utils import (
     generate_beep_file, generate_silence_file,
     generate_double_beep_file, concat_audio
 )
+from run_guard import (
+    MANIFEST_NAME, typed_manifest_name,
+    commit_manifest, content_hash, load_manifest, reusable
+)
 
 try:
     import edge_tts
@@ -292,8 +296,9 @@ async def tts_to_file(text: str, voice_key: str, output_path: str):
     await communicate.save(output_path)
 
 
-async def build_conversation_audio(conv: dict, output_dir: str):
-    """Build a complete conversation exercise with proper timing."""
+async def build_conversation_audio(conv: dict, output_dir: str) -> list:
+    """Build a complete conversation exercise with proper timing.
+    Returns the relative filenames written to output_dir."""
     os.makedirs(output_dir, exist_ok=True)
     tmp = os.path.join(output_dir, "_tmp")
     os.makedirs(tmp, exist_ok=True)
@@ -326,24 +331,29 @@ async def build_conversation_audio(conv: dict, output_dir: str):
     final = os.path.join(output_dir, "audio.mp3")
     result = concat_audio(segments, final)
 
-    if not result:
+    written = []
+    if result:
+        written = ["audio.mp3"]
+    else:
         # Fallback: keep individual files, rename cleanly
         for i, line in enumerate(conv["lines"]):
             src = os.path.join(tmp, f"line-{i:02d}.mp3")
             dst = os.path.join(output_dir, f"line-{i:02d}.mp3")
             if os.path.exists(src):
                 os.rename(src, dst)
+                written.append(f"line-{i:02d}.mp3")
         print(f"  ⚠️ 無法合併，已保留個別音檔")
 
     # Cleanup tmp
     import shutil
     shutil.rmtree(tmp, ignore_errors=True)
 
-    return final if result else output_dir
+    return written
 
 
-async def build_academic_talk_audio(talk: dict, output_dir: str):
-    """Build an academic talk with natural pauses at [PAUSE] markers."""
+async def build_academic_talk_audio(talk: dict, output_dir: str) -> list:
+    """Build an academic talk with natural pauses at [PAUSE] markers.
+    Returns the relative filenames written to output_dir."""
     os.makedirs(output_dir, exist_ok=True)
     tmp = os.path.join(output_dir, "_tmp")
     os.makedirs(tmp, exist_ok=True)
@@ -377,57 +387,56 @@ async def build_academic_talk_audio(talk: dict, output_dir: str):
     segments.append(end_sil)
 
     final = os.path.join(output_dir, "audio.mp3")
+    written = ["audio.mp3"] if concat_audio(segments, final) else []
+
+    import shutil
+    shutil.rmtree(tmp, ignore_errors=True)
+
+    return written
+
+
+async def build_choose_response_audio(item: dict, output_dir: str) -> list:
+    """Build one Choose a Response exercise: statement → pause → beep.
+    Returns the relative filenames written to output_dir."""
+    os.makedirs(output_dir, exist_ok=True)
+    tmp = os.path.join(output_dir, "_tmp")
+    os.makedirs(tmp, exist_ok=True)
+
+    segments = []
+
+    # Settle-in
+    settle = os.path.join(tmp, "settle.wav")
+    generate_silence_file(settle, 1000)
+    segments.append(settle)
+
+    # Statement
+    stmt = os.path.join(tmp, "statement.mp3")
+    await tts_to_file(item["prompt"], item["speaker"], stmt)
+    segments.append(stmt)
+
+    # Pause before answer
+    pause = os.path.join(tmp, "pause.wav")
+    generate_silence_file(pause, ANSWER_PAUSE)
+    segments.append(pause)
+
+    # Beep (answer now)
+    beep = os.path.join(tmp, "beep.wav")
+    generate_beep_file(beep, frequency=660, duration_ms=250, volume=0.3)
+    segments.append(beep)
+
+    # Brief silence after beep
+    post_beep = os.path.join(tmp, "post.wav")
+    generate_silence_file(post_beep, 500)
+    segments.append(post_beep)
+
+    # Concatenate
+    final = os.path.join(output_dir, "audio.mp3")
     concat_audio(segments, final)
 
     import shutil
     shutil.rmtree(tmp, ignore_errors=True)
 
-
-async def build_choose_response_audio(items: list, output_dir: str):
-    """Build Choose a Response exercises: statement → pause → beep."""
-    os.makedirs(output_dir, exist_ok=True)
-
-    for i, item in enumerate(items):
-        item_dir = os.path.join(output_dir, f"item-{i+1:02d}")
-        os.makedirs(item_dir, exist_ok=True)
-        tmp = os.path.join(item_dir, "_tmp")
-        os.makedirs(tmp, exist_ok=True)
-
-        segments = []
-
-        # Settle-in
-        settle = os.path.join(tmp, "settle.wav")
-        generate_silence_file(settle, 1000)
-        segments.append(settle)
-
-        # Statement
-        stmt = os.path.join(tmp, "statement.mp3")
-        await tts_to_file(item["prompt"], item["speaker"], stmt)
-        segments.append(stmt)
-
-        # Pause before answer
-        pause = os.path.join(tmp, "pause.wav")
-        generate_silence_file(pause, ANSWER_PAUSE)
-        segments.append(pause)
-
-        # Beep (answer now)
-        beep = os.path.join(tmp, "beep.wav")
-        generate_beep_file(beep, frequency=660, duration_ms=250, volume=0.3)
-        segments.append(beep)
-
-        # Brief silence after beep
-        post_beep = os.path.join(tmp, "post.wav")
-        generate_silence_file(post_beep, 500)
-        segments.append(post_beep)
-
-        # Concatenate
-        final = os.path.join(item_dir, "audio.mp3")
-        concat_audio(segments, final)
-
-        import shutil
-        shutil.rmtree(tmp, ignore_errors=True)
-
-    print(f"✅ Choose a Response：{len(items)} 題已產生")
+    return ["audio.mp3"] if os.path.exists(final) else []
 
 
 def write_exercise_meta(content: dict, output_dir: str, ex_type: str):
@@ -478,7 +487,13 @@ def write_exercise_meta(content: dict, output_dir: str, ex_type: str):
 
 
 async def generate_all(args):
-    """Main generation entry point."""
+    """Main generation entry point.
+
+    Each exercise type keeps its own run manifest (see run_guard.py): a rerun
+    overwrites only the folders the current selection produces, stale folders
+    from earlier selections are pruned after a successful write, and TTS
+    synthesis is skipped when the content hash and recorded files still match.
+    """
     base = Path(args.output)
     base.mkdir(parents=True, exist_ok=True)
 
@@ -487,34 +502,104 @@ async def generate_all(args):
 
     if args.type in ("choose-response", "all"):
         items = [it for it in CHOOSE_RESPONSE_ITEMS if it["difficulty"] in allowed]
-        cr_dir = base / "choose-response"
-        await build_choose_response_audio(items, str(cr_dir))
-        for i, item in enumerate(items):
-            write_exercise_meta(item, str(cr_dir / f"item-{i+1:02d}"), "choose-response")
+        if not items:
+            print("⚠️ Choose a Response：此難度範圍沒有素材，未改動任何既有練習")
+        else:
+            cr_dir = base / "choose-response"
+            str_cr = str(cr_dir)
+            m_path = os.path.join(str_cr, MANIFEST_NAME)
+            manifest = load_manifest(m_path, "choose-response")
+            entries = {}
+            for i, item in enumerate(items):
+                folder = f"item-{i+1:02d}"
+                ih = content_hash(item)
+                item_dir = str(cr_dir / folder)
+                entry = manifest["entries"].get(folder)
+                if not reusable(entry, item_dir, ih):
+                    written = await build_choose_response_audio(item, item_dir)
+                    entries[folder] = {"hash": ih, "files": written}
+                else:
+                    print(f"✅ Choose a Response {i+1}：內容未變，沿用既有音檔")
+                    entries[folder] = entry
+                write_exercise_meta(item, item_dir, "choose-response")
+            for name in commit_manifest(m_path, "choose-response", str_cr, entries, allowed):
+                print(f"🗑️ 已移除先前執行留下的過期練習：choose-response/{name}")
+            print(f"✅ Choose a Response：{len(items)} 題已產生")
 
     if args.type in ("conversation", "all"):
         convs = [c for c in CONVERSATIONS if c["difficulty"] in allowed]
-        for i, conv in enumerate(convs):
-            conv_dir = base / f"conversation-{i+1:02d}"
-            await build_conversation_audio(conv, str(conv_dir))
-            write_exercise_meta(conv, str(conv_dir), "conversation")
-            print(f"✅ Conversation {i+1}: {conv['title']}")
+        if not convs:
+            print("⚠️ Conversation：此難度範圍沒有素材，未改動任何既有對話")
+        else:
+            str_base = str(base)
+            m_path = os.path.join(str_base, typed_manifest_name("conversation"))
+            manifest = load_manifest(m_path, "conversation")
+            entries = {}
+            for i, conv in enumerate(convs):
+                folder = f"conversation-{i+1:02d}"
+                ih = content_hash(conv)
+                conv_dir = str(base / folder)
+                entry = manifest["entries"].get(folder)
+                if not reusable(entry, conv_dir, ih):
+                    written = await build_conversation_audio(conv, conv_dir)
+                    entries[folder] = {"hash": ih, "files": written}
+                    print(f"✅ Conversation {i+1}: {conv['title']}")
+                else:
+                    print(f"✅ Conversation {i+1}: {conv['title']}（內容未變，沿用既有音檔）")
+                    entries[folder] = entry
+                write_exercise_meta(conv, conv_dir, "conversation")
+            for name in commit_manifest(m_path, "conversation", str_base, entries, allowed):
+                print(f"🗑️ 已移除先前執行留下的過期練習：{name}")
 
     if args.type in ("announcement", "all"):
         anns = [a for a in ANNOUNCEMENTS if a["difficulty"] in allowed]
-        for i, ann in enumerate(anns):
-            ann_dir = base / f"announcement-{i+1:02d}"
-            await build_academic_talk_audio(ann, str(ann_dir))
-            write_exercise_meta(ann, str(ann_dir), "announcement")
-            print(f"✅ Announcement {i+1}: {ann['title']}")
+        if not anns:
+            print("⚠️ Announcement：此難度範圍沒有素材，未改動任何既有公告")
+        else:
+            str_base = str(base)
+            m_path = os.path.join(str_base, typed_manifest_name("announcement"))
+            manifest = load_manifest(m_path, "announcement")
+            entries = {}
+            for i, ann in enumerate(anns):
+                folder = f"announcement-{i+1:02d}"
+                ih = content_hash(ann)
+                ann_dir = str(base / folder)
+                entry = manifest["entries"].get(folder)
+                if not reusable(entry, ann_dir, ih):
+                    written = await build_academic_talk_audio(ann, ann_dir)
+                    entries[folder] = {"hash": ih, "files": written}
+                else:
+                    print(f"✅ Announcement {i+1}: {ann['title']}（內容未變，沿用既有音檔）")
+                    entries[folder] = entry
+                write_exercise_meta(ann, ann_dir, "announcement")
+                print(f"✅ Announcement {i+1}: {ann['title']}")
+            for name in commit_manifest(m_path, "announcement", str_base, entries, allowed):
+                print(f"🗑️ 已移除先前執行留下的過期練習：{name}")
 
     if args.type in ("academic", "all"):
         talks = [t for t in ACADEMIC_TALKS if t["difficulty"] in allowed]
-        for i, talk in enumerate(talks):
-            talk_dir = base / f"academic-{i+1:02d}"
-            await build_academic_talk_audio(talk, str(talk_dir))
-            write_exercise_meta(talk, str(talk_dir), "academic-talk")
-            print(f"✅ Academic Talk {i+1}: {talk['title']}")
+        if not talks:
+            print("⚠️ Academic Talk：此難度範圍沒有素材，未改動任何既有演講")
+        else:
+            str_base = str(base)
+            m_path = os.path.join(str_base, typed_manifest_name("academic"))
+            manifest = load_manifest(m_path, "academic")
+            entries = {}
+            for i, talk in enumerate(talks):
+                folder = f"academic-{i+1:02d}"
+                ih = content_hash(talk)
+                talk_dir = str(base / folder)
+                entry = manifest["entries"].get(folder)
+                if not reusable(entry, talk_dir, ih):
+                    written = await build_academic_talk_audio(talk, talk_dir)
+                    entries[folder] = {"hash": ih, "files": written}
+                else:
+                    print(f"✅ Academic Talk {i+1}: {talk['title']}（內容未變，沿用既有音檔）")
+                    entries[folder] = entry
+                write_exercise_meta(talk, talk_dir, "academic-talk")
+                print(f"✅ Academic Talk {i+1}: {talk['title']}")
+            for name in commit_manifest(m_path, "academic", str_base, entries, allowed):
+                print(f"🗑️ 已移除先前執行留下的過期練習：{name}")
 
     print(f"\n🎧 聽力練習已產生於：{base}")
 
