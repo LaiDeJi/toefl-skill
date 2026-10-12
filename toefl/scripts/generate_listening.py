@@ -45,8 +45,8 @@ VOICES = {
     "professor_m":   {"id": "en-US-GuyNeural",    "rate": "-5%",  "desc": "Male professor, measured pace"},
     "professor_f":   {"id": "en-US-AriaNeural",    "rate": "-5%",  "desc": "Female professor, clear"},
     "student_f":     {"id": "en-US-JennyNeural",   "rate": "+5%",  "desc": "Female student, natural"},
-    "student_m":     {"id": "en-US-TonyNeural",    "rate": "+5%",  "desc": "Male student, casual"},
-    "advisor":       {"id": "en-US-SaraNeural",    "rate": "+0%",  "desc": "Academic advisor, warm"},
+    "student_m":     {"id": "en-US-AndrewNeural",  "rate": "+5%",  "desc": "Male student, casual"},
+    "advisor":       {"id": "en-US-MichelleNeural", "rate": "+0%", "desc": "Academic advisor, warm"},
     "announcer":     {"id": "en-US-AriaNeural",     "rate": "-8%",  "desc": "PA announcer, formal slow"},
     "librarian":     {"id": "en-US-JennyNeural",   "rate": "-3%",  "desc": "Librarian, helpful"},
     "narrator":      {"id": "en-US-AriaNeural",     "rate": "+0%",  "desc": "Narrator / directions"},
@@ -60,6 +60,31 @@ LONG_PAUSE = 1200        # Pause after a key point in a lecture
 ANSWER_PAUSE = 2000      # Pause before answer beep (Choose a Response)
 END_SILENCE = 1000       # Silence after clip ends
 QUESTION_GAP = 3000      # Gap between questions in exercise mode
+
+
+# ── Voice Validation ─────────────────────────────────────────
+
+async def validate_voices():
+    """Check every profile's voice ID against the service's current voice list.
+
+    Microsoft retires voices over time; a retired voice fails at render time
+    with NoAudioReceived. This check surfaces the problem once at startup and
+    names the affected profiles, instead of killing the run mid-clip.
+    """
+    try:
+        voices = await edge_tts.list_voices()
+    except Exception as e:
+        # Service unreachable: fail open, the render itself will report errors.
+        print(f"⚠️ 無法取得語音清單（{type(e).__name__}: {e}），略過語音檢查")
+        return
+    available = {v["ShortName"] for v in voices}
+    retired = [(key, v["id"]) for key, v in VOICES.items() if v["id"] not in available]
+    if retired:
+        print("❌ 以下語音 ID 不存在於 edge-tts 服務（可能已被 Microsoft 停用）：")
+        for key, vid in retired:
+            print(f"  - {key}: {vid}")
+        print("   請更新 VOICES 中的語音 ID（可用 edge_tts.list_voices() 查詢）。")
+        raise SystemExit(1)
 
 # ── Content: Choose a Response (Module 1 staple) ─────────────
 
@@ -286,10 +311,25 @@ ACADEMIC_TALKS = [
 # ── Audio Generation Engine ───────────────────────────────────
 
 async def tts_to_file(text: str, voice_key: str, output_path: str):
-    """Generate TTS audio with voice profile settings."""
+    """Generate TTS audio with voice profile settings.
+
+    Retries transient network failures with backoff. A voice the service
+    rejects (for example a retired voice ID) still raises after the final
+    retry, with the profile name attached to the error message.
+    """
     v = VOICES[voice_key]
-    communicate = edge_tts.Communicate(text, v["id"], rate=v["rate"])
-    await communicate.save(output_path)
+    last_err = None
+    for attempt in range(1, 4):
+        try:
+            communicate = edge_tts.Communicate(text, v["id"], rate=v["rate"])
+            await communicate.save(output_path)
+            return
+        except Exception as e:
+            last_err = e
+            if attempt < 3:
+                await asyncio.sleep(attempt)  # 1s, 2s backoff before next try
+    print(f"❌ 語音合成失敗（已重試 2 次）：{voice_key}（{v['id']}）— {type(last_err).__name__}: {last_err}")
+    raise last_err
 
 
 async def build_conversation_audio(conv: dict, output_dir: str):
@@ -479,6 +519,8 @@ def write_exercise_meta(content: dict, output_dir: str, ex_type: str):
 
 async def generate_all(args):
     """Main generation entry point."""
+    await validate_voices()
+
     base = Path(args.output)
     base.mkdir(parents=True, exist_ok=True)
 
