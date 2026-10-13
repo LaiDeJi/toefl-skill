@@ -1,7 +1,7 @@
 # toefl
 
-[![Build & Release Skill](https://github.com/htlin222/toefl-skill/actions/workflows/release.yml/badge.svg)](https://github.com/htlin222/toefl-skill/actions/workflows/release.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/htlin222/toefl-skill?include_prereleases&label=skill%20version)](https://github.com/htlin222/toefl-skill/releases/latest)
+[![Build & Release Skill](https://github.com/LaiDeJi/toefl-skill/actions/workflows/release.yml/badge.svg)](https://github.com/LaiDeJi/toefl-skill/actions/workflows/release.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/LaiDeJi/toefl-skill?include_prereleases&label=skill%20version)](https://github.com/LaiDeJi/toefl-skill/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 [![Skills Protocol](https://img.shields.io/badge/protocol-vercel--labs%2Fskills-blue)](https://github.com/vercel-labs/skills)
 [![Compatible Agents](https://img.shields.io/badge/agents-40%2B-green)](https://github.com/vercel-labs/skills#supported-agents)
@@ -11,8 +11,8 @@
 ## Install
 
 ```bash
-npx skills add htlin222/toefl-skill
-npx skills add -g htlin222/toefl-skill        # global
+npx skills add LaiDeJi/toefl-skill
+npx skills add -g LaiDeJi/toefl-skill        # global
 ```
 
 ## What it does
