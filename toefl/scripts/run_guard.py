@@ -71,7 +71,7 @@ def load_manifest(path: str, ex_type: str) -> dict:
     except FileNotFoundError:
         return manifest
     except (OSError, ValueError):
-        print(f"⚠️  Manifest 檔損毀或無法讀取（{path}），本次執行會重建紀錄")
+        print(f"⚠️  Manifest 档损毁或无法读取（{path}），本次执行会重建纪录")
         return manifest
     if isinstance(stored, dict) and stored.get("type") == ex_type:
         manifest["difficulty"] = stored.get("difficulty") if isinstance(stored.get("difficulty"), list) else []
@@ -110,7 +110,7 @@ def commit_manifest(path: str, ex_type: str, scope_dir: str, entries: dict, diff
             shutil.rmtree(target)
             pruned.append(name)
         except OSError:
-            print(f"⚠️  清除過期資料夾失敗（接下來不會再管理它）：{target}")
+            print(f"⚠️  清除过期资料夹失败（接下来不会再管理它）：{target}")
 
     payload = {"type": ex_type, "difficulty": list(difficulty), "entries": entries}
     tmp = f"{path}.tmp"

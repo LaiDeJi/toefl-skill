@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-TOEFL 備考系統 — 每日追蹤模組 (daily.py)
-每天開啟資料夾時的進入點：顯示今日任務、追蹤完成度、推進天數。
+TOEFL 备考系统 — 每日追踪模组 (daily.py)
+每天开启资料夹时的进入点：显示今日任务、追踪完成度、推进天数。
 
 Usage:
-    python daily.py --target ./toefl-prep/                    # 顯示今日任務
-    python daily.py --target ./toefl-prep/ --complete          # 標記今日完成
-    python daily.py --target ./toefl-prep/ --advance           # 推進到下一天
-    python daily.py --target ./toefl-prep/ --log-minutes 30    # 記錄今日學習時間
-    python daily.py --target ./toefl-prep/ --status            # 顯示本週狀態總覽
+    python daily.py --target ./toefl-prep/                    # 显示今日任务
+    python daily.py --target ./toefl-prep/ --complete          # 标记今日完成
+    python daily.py --target ./toefl-prep/ --advance           # 推进到下一天
+    python daily.py --target ./toefl-prep/ --log-minutes 30    # 记录今日学习时间
+    python daily.py --target ./toefl-prep/ --status            # 显示本周状态总览
 """
 
 import argparse
@@ -48,7 +48,7 @@ def show_today(target: str):
     progress_path = os.path.join(target, "progress.json")
 
     if not os.path.exists(config_path):
-        print("❌ 找不到 config.json。請先執行 init.py 初始化。")
+        print("❌ 找不到 config.json。请先执行 init.py 初始化。")
         return
 
     config = load_json(config_path)
@@ -64,7 +64,7 @@ def show_today(target: str):
 
     # Header
     greeting = get_greeting()
-    print(f"\n{greeting}！歡迎回來 📚")
+    print(f"\n{greeting}！欢迎回来 📚")
     print("=" * 50)
 
     # Countdown
@@ -73,14 +73,14 @@ def show_today(target: str):
             exam_dt = datetime.strptime(exam_date, "%Y-%m-%d").date()
             days_left = (exam_dt - date.today()).days
             if days_left > 0:
-                print(f"⏳ 距離考試：{days_left} 天")
+                print(f"⏳ 距离考试：{days_left} 天")
         except ValueError:
             pass
 
     # Streak & stats
     streak_emoji = "🔥" if streak >= 7 else "✨" if streak >= 3 else "💪"
-    print(f"{streak_emoji} 連續學習：{streak} 天 | 累計 {total_min} 分鐘")
-    print(f"🎯 目標：{target_score} | 📅 第 {week} 週 Day {day}")
+    print(f"{streak_emoji} 连续学习：{streak} 天 | 累计 {total_min} 分钟")
+    print(f"🎯 目标：{target_score} | 📅 第 {week} 周 Day {day}")
 
     # Phase info
     phases = config.get("phase_schedule", {})
@@ -89,15 +89,15 @@ def show_today(target: str):
         if phase_range["start"] <= week <= phase_range["end"]:
             current_phase = phase_name
             break
-    phase_names = {"foundation": "基礎期 🌱", "intensive": "強化期 💪", "sprint": "衝刺期 🚀"}
-    print(f"📌 階段：{phase_names.get(current_phase, current_phase)}")
+    phase_names = {"foundation": "基础期 🌱", "intensive": "强化期 💪", "sprint": "冲刺期 🚀"}
+    print(f"📌 阶段：{phase_names.get(current_phase, current_phase)}")
     print()
 
     # Diagnostic reminder
     if not config.get("diagnostic_completed", False):
-        print("⚠️  你還沒完成診斷測驗！")
-        print("   請先打開 mock-tests/diagnostic/diagnostic-quiz.md")
-        print("   完成後告訴 Claude：「我完成診斷測驗了」")
+        print("⚠️  你还没完成诊断测验！")
+        print("   请先打开 mock-tests/diagnostic/diagnostic-quiz.md")
+        print("   完成后告诉 AI：「我完成诊断测验了」")
         print()
 
     # Today's task
@@ -106,7 +106,7 @@ def show_today(target: str):
     else:
         task_path = os.path.join(target, "plan", f"week-{week:02d}", "daily", "review-day.md")
 
-    print("📋 今日任務")
+    print("📋 今日任务")
     print("-" * 50)
 
     if os.path.exists(task_path):
@@ -118,14 +118,14 @@ def show_today(target: str):
                 print(f"  {line.strip()}")
     else:
         print(f"  找不到 {task_path}")
-        print(f"  請確認 plan/week-{week:02d}/daily/ 資料夾存在")
+        print(f"  请确认 plan/week-{week:02d}/daily/ 资料夹存在")
 
     print()
     print("💡 可用指令：")
-    print("   「開始練習」— 按順序引導今日練習")
-    print("   「完成了」  — 標記今日完成並推進")
-    print("   「看進度」  — 查看完整進度報告")
-    print("   「弱項分析」— 分析需要加強的地方")
+    print("   「开始练习」— 按顺序引导今日练习")
+    print("   「完成了」  — 标记今日完成并推进")
+    print("   「看进度」  — 查看完整进度报告")
+    print("   「弱项分析」— 分析需要加强的地方")
 
     # Show adaptive recommendation if available
     adaptive_path = os.path.join(target, "adaptive.json")
@@ -134,18 +134,18 @@ def show_today(target: str):
         template = adaptive.get("daily_template")
         if template:
             print()
-            print("🧠 自適應建議（基於你的表現數據）：")
+            print("🧠 自适应建议（基于你的表现数据）：")
             print("-" * 50)
             primary = template.get("primary", {})
             secondary = template.get("secondary", {})
-            print(f"  📚 單字：{template.get('vocabulary', 5)} min")
-            print(f"  🔴 主練 {primary.get('section', '?').capitalize()}：{primary.get('minutes', '?')} min")
-            print(f"  🟡 副練 {secondary.get('section', '?').capitalize()}：{secondary.get('minutes', '?')} min")
+            print(f"  📚 单字：{template.get('vocabulary', 5)} min")
+            print(f"  🔴 主练 {primary.get('section', '?').capitalize()}：{primary.get('minutes', '?')} min")
+            print(f"  🟡 副练 {secondary.get('section', '?').capitalize()}：{secondary.get('minutes', '?')} min")
 
             diff_levels = adaptive.get("difficulty_levels", {})
             if diff_levels:
                 lvs = [f"{s[:1].upper()}=Lv{l}" for s, l in diff_levels.items()]
-                print(f"  📏 難度：{' / '.join(lvs)}")
+                print(f"  📏 难度：{' / '.join(lvs)}")
 
 
 def mark_complete(target: str, minutes: int = None):
@@ -200,8 +200,8 @@ def mark_complete(target: str, minutes: int = None):
     progress["last_updated"] = datetime.now().isoformat()
     save_json(progress_path, progress)
 
-    print(f"✅ 第 {week} 週 Day {day} 完成！（{actual_min} 分鐘）")
-    print(f"🔥 連續 {streak} 天")
+    print(f"✅ 第 {week} 周 Day {day} 完成！（{actual_min} 分钟）")
+    print(f"🔥 连续 {streak} 天")
 
     # Milestone checks
     total = progress.get("total_study_minutes", 0)
@@ -209,7 +209,7 @@ def mark_complete(target: str, minutes: int = None):
     for m in milestones:
         if total - actual_min < m <= total:
             hours = m // 60
-            print(f"🏆 里程碑達成：累計學習 {hours} 小時！")
+            print(f"🏆 里程碑达成：累计学习 {hours} 小时！")
 
 
 def advance_day(target: str):
@@ -223,22 +223,22 @@ def advance_day(target: str):
 
     if day >= 7:  # End of week
         if week >= total_weeks:
-            print("🎉 恭喜你完成了所有週的計畫！")
-            print("   接下來專注模擬考和考前調整吧。")
+            print("🎉 恭喜你完成了所有周的计划！")
+            print("   接下来专注模拟考和考前调整吧。")
             return
         config["current_week"] = week + 1
         config["current_day"] = 1
-        print(f"📅 推進到第 {week + 1} 週 Day 1")
+        print(f"📅 推进到第 {week + 1} 周 Day 1")
 
         # Phase transition check
         phases = config.get("phase_schedule", {})
         for phase_name, phase_range in phases.items():
             if phase_range["start"] == week + 1:
-                phase_names = {"foundation": "基礎期 🌱", "intensive": "強化期 💪", "sprint": "衝刺期 🚀"}
-                print(f"🎯 進入新階段：{phase_names.get(phase_name, phase_name)}")
+                phase_names = {"foundation": "基础期 🌱", "intensive": "强化期 💪", "sprint": "冲刺期 🚀"}
+                print(f"🎯 进入新阶段：{phase_names.get(phase_name, phase_name)}")
     else:
         config["current_day"] = day + 1
-        print(f"📅 推進到第 {week} 週 Day {day + 1}")
+        print(f"📅 推进到第 {week} 周 Day {day + 1}")
 
     save_json(config_path, config)
 
@@ -251,7 +251,7 @@ def show_week_status(target: str):
     week = config.get("current_week", 1)
     total_weeks = config.get("total_weeks", 12)
 
-    print(f"\n📊 本週狀態（第 {week} 週）")
+    print(f"\n📊 本周状态（第 {week} 周）")
     print("=" * 40)
 
     # Goals
@@ -276,7 +276,7 @@ def show_week_status(target: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 每日追蹤模組")
+    parser = argparse.ArgumentParser(description="TOEFL 每日追踪模组")
     parser.add_argument("--target", default="./toefl-prep/")
     parser.add_argument("--complete", action="store_true", help="Mark today as complete")
     parser.add_argument("--advance", action="store_true", help="Advance to next day")

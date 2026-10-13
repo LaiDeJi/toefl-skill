@@ -6,19 +6,18 @@
 [![Skills Protocol](https://img.shields.io/badge/protocol-vercel--labs%2Fskills-blue)](https://github.com/vercel-labs/skills)
 [![Compatible Agents](https://img.shields.io/badge/agents-40%2B-green)](https://github.com/vercel-labs/skills#supported-agents)
 
-> TOEFL iBT 2026 備考教練與學習系統。在空白資料夾中自動展開完整的 12 週學習計畫、每日訓練素材、進度追蹤、模擬考、Anki 單字卡生成、TTS 聽力練習、口說評估、寫作批改。
+> TOEFL iBT 2026 备考教练与学习系统。在空白文件夹中自动展开完整的 12 周学习计划、每日训练素材、进度追踪、模拟考、Anki 单词卡生成、TTS 听力练习、口语评估、写作批改。
 
 ## Install
 
 ```bash
 npx skills add htlin222/toefl-skill
 npx skills add -g htlin222/toefl-skill        # global
-npx skills add htlin222/toefl-skill --agent claude-code  # specific agent
 ```
 
 ## What it does
 
-一套 Claude Code 驅動的模組化 TOEFL 備考系統。本技能由 8 個獨立模組組成，採用 progressive disclosure——只在需要時才讀取對應模組。
+一套 AI 驱动的模块化 TOEFL 备考系统。本技能由 8 个独立模块组成，采用 progressive disclosure——只在需要时才读取对应模块。
 
 ## Skill structure
 

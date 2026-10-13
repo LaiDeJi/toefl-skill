@@ -72,30 +72,30 @@ def create_progress(target: Path, weeks: int):
 
 PHASES = {
     "foundation": {
-        "name": "基礎期",
+        "name": "基础期",
         "weeks": (1, 4),
-        "focus": "熟悉題型、建立每日習慣、累積基礎字彙",
+        "focus": "熟悉题型、建立每日习惯、累积基础字汇",
     },
     "intensive": {
-        "name": "強化期",
+        "name": "强化期",
         "weeks": (5, 8),
-        "focus": "弱項加強、計時練習、提升準確度",
+        "focus": "弱项加强、计时练习、提升准确度",
     },
     "sprint": {
-        "name": "衝刺期",
+        "name": "冲刺期",
         "weeks": (9, 12),
-        "focus": "模擬考、穩定輸出、考前調整",
+        "focus": "模拟考、稳定输出、考前调整",
     },
 }
 
 
 DAILY_TEMPLATES = {
-    "reading": "## 閱讀練習\n\n- [ ] Complete the Words：5 題\n- [ ] Read in Daily Life：2 篇\n- [ ] Academic Passage：1 篇\n\n### 筆記區\n\n",
-    "listening": "## 聽力練習\n\n- [ ] Choose a Response：5 題\n- [ ] Conversation：1 段\n- [ ] Announcement：1 段\n- [ ] 筆記練習：記錄關鍵詞\n\n### 筆記區\n\n",
-    "speaking": "## 口說練習\n\n- [ ] Listen & Repeat：跟讀 7 句（shadowing 15 分鐘）\n- [ ] Interview：即興回答 2 題（各 45 秒）\n- [ ] 錄音並回聽\n\n### 自我評估\n\n| 維度 | 自評 (1-5) | 備註 |\n|------|-----------|------|\n| Fluency | | |\n| Intelligibility | | |\n| Language Use | | |\n| Organization | | |\n\n",
-    "writing": "## 寫作練習\n\n- [ ] Build a Sentence：10 題\n- [ ] Write an Email 或 Academic Discussion（擇一）\n\n### 草稿區\n\n\n### Claude 批改結果\n\n（完成後請 Claude 批改）\n",
-    "vocabulary": "## 單字複習\n\n- [ ] Anki 複習（舊卡）\n- [ ] 學習 20 個新單字\n- [ ] 用新單字造句 5 句\n\n### 今日新單字\n\n| 單字 | 詞性 | 定義 | 例句 |\n|------|------|------|------|\n| | | | |\n\n",
-    "review": "## 週末複習\n\n- [ ] Anki 全部複習\n- [ ] 重做本週錯題\n- [ ] 更新進度追蹤\n- [ ] 檢查本週目標完成度\n\n### 本週反思\n\n**做得好的：**\n\n**需要改進的：**\n\n**下週重點：**\n\n",
+    "reading": "## 阅读练习\n\n- [ ] Complete the Words：5 题\n- [ ] Read in Daily Life：2 篇\n- [ ] Academic Passage：1 篇\n\n### 笔记区\n\n",
+    "listening": "## 听力练习\n\n- [ ] Choose a Response：5 题\n- [ ] Conversation：1 段\n- [ ] Announcement：1 段\n- [ ] 笔记练习：记录关键词\n\n### 笔记区\n\n",
+    "speaking": "## 口说练习\n\n- [ ] Listen & Repeat：跟读 7 句（shadowing 15 分钟）\n- [ ] Interview：即兴回答 2 题（各 45 秒）\n- [ ] 录音并回听\n\n### 自我评估\n\n| 维度 | 自评 (1-5) | 备注 |\n|------|-----------|------|\n| Fluency | | |\n| Intelligibility | | |\n| Language Use | | |\n| Organization | | |\n\n",
+    "writing": "## 写作练习\n\n- [ ] Build a Sentence：10 题\n- [ ] Write an Email 或 Academic Discussion（择一）\n\n### 草稿区\n\n\n### AI 批改结果\n\n（完成后请 AI 批改）\n",
+    "vocabulary": "## 单字复习\n\n- [ ] Anki 复习（旧卡）\n- [ ] 学习 20 个新单字\n- [ ] 用新单字造句 5 句\n\n### 今日新单字\n\n| 单字 | 词性 | 定义 | 例句 |\n|------|------|------|------|\n| | | | |\n\n",
+    "review": "## 周末复习\n\n- [ ] Anki 全部复习\n- [ ] 重做本周错题\n- [ ] 更新进度追踪\n- [ ] 检查本周目标完成度\n\n### 本周反思\n\n**做得好的：**\n\n**需要改进的：**\n\n**下周重点：**\n\n",
 }
 
 
@@ -126,60 +126,60 @@ def create_weekly_goals(week: int, total_weeks: int) -> str:
     phase = get_phase(week, total_weeks)
     phase_info = PHASES[phase]
 
-    goals = f"# 第 {week} 週 — {phase_info['name']}\n\n"
-    goals += f"**階段重點：** {phase_info['focus']}\n\n"
-    goals += "## 本週目標\n\n"
+    goals = f"# 第 {week} 周 — {phase_info['name']}\n\n"
+    goals += f"**阶段重点：** {phase_info['focus']}\n\n"
+    goals += "## 本周目标\n\n"
 
     if phase == "foundation":
         if week == 1:
-            goals += "- [ ] 完成診斷模擬考，記錄基線分數\n"
-            goals += "- [ ] 熟悉所有新制題型\n"
-            goals += "- [ ] 建立每日 Anki 習慣\n"
-            goals += "- [ ] 累積 30 個新單字\n"
+            goals += "- [ ] 完成诊断模拟考，记录基线分数\n"
+            goals += "- [ ] 熟悉所有新制题型\n"
+            goals += "- [ ] 建立每日 Anki 习惯\n"
+            goals += "- [ ] 累积 30 个新单字\n"
         elif week == 2:
-            goals += "- [ ] 閱讀三種題型各練習 10 題以上\n"
-            goals += "- [ ] 累積 100 個新單字（含拼寫）\n"
-            goals += "- [ ] Complete the Words 正確率 ≥ 60%\n"
+            goals += "- [ ] 阅读三种题型各练习 10 题以上\n"
+            goals += "- [ ] 累积 100 个新单字（含拼写）\n"
+            goals += "- [ ] Complete the Words 正确率 ≥ 60%\n"
         elif week == 3:
-            goals += "- [ ] 聽力四種題型各練習 5 題以上\n"
-            goals += "- [ ] Listen & Repeat 嘗試完整複述 7 句\n"
-            goals += "- [ ] 聽懂 2 分鐘學術短文的主旨\n"
+            goals += "- [ ] 听力四种题型各练习 5 题以上\n"
+            goals += "- [ ] Listen & Repeat 尝试完整复述 7 句\n"
+            goals += "- [ ] 听懂 2 分钟学术短文的主旨\n"
         else:
-            goals += "- [ ] Build a Sentence 正確率 ≥ 70%\n"
+            goals += "- [ ] Build a Sentence 正确率 ≥ 70%\n"
             goals += "- [ ] 完成一篇 Email + 一篇 Discussion\n"
-            goals += "- [ ] 完成第二次模擬考\n"
+            goals += "- [ ] 完成第二次模拟考\n"
 
     elif phase == "intensive":
         if week == 5:
-            goals += "- [ ] Module 1 模擬正確率 ≥ 70%\n"
-            goals += "- [ ] 限時練習閱讀和聽力\n"
+            goals += "- [ ] Module 1 模拟正确率 ≥ 70%\n"
+            goals += "- [ ] 限时练习阅读和听力\n"
         elif week == 6:
-            goals += "- [ ] 每天 shadowing 15 分鐘\n"
-            goals += "- [ ] Interview 能穩定說滿 40 秒\n"
+            goals += "- [ ] 每天 shadowing 15 分钟\n"
+            goals += "- [ ] Interview 能稳定说满 40 秒\n"
         elif week == 7:
-            goals += "- [ ] Email 和 Discussion 計時完成\n"
-            goals += "- [ ] Build a Sentence 正確率 ≥ 90%\n"
+            goals += "- [ ] Email 和 Discussion 计时完成\n"
+            goals += "- [ ] Build a Sentence 正确率 ≥ 90%\n"
         else:
-            goals += "- [ ] 完成第三次模擬考\n"
-            goals += "- [ ] 分數達到目標 -0.5 以內\n"
+            goals += "- [ ] 完成第三次模拟考\n"
+            goals += "- [ ] 分数达到目标 -0.5 以内\n"
 
     else:  # sprint
         if week == 9:
-            goals += "- [ ] 完成 2 次完整模擬考\n"
-            goals += "- [ ] 嚴格計時\n"
+            goals += "- [ ] 完成 2 次完整模拟考\n"
+            goals += "- [ ] 严格计时\n"
         elif week == 10:
-            goals += "- [ ] 分析所有模擬考的錯誤模式\n"
-            goals += "- [ ] 針對弱項專項練習\n"
+            goals += "- [ ] 分析所有模拟考的错误模式\n"
+            goals += "- [ ] 针对弱项专项练习\n"
         elif week == 11:
-            goals += "- [ ] 最後一次完整模擬考\n"
-            goals += "- [ ] 分數穩定在目標範圍\n"
+            goals += "- [ ] 最后一次完整模拟考\n"
+            goals += "- [ ] 分数稳定在目标范围\n"
         else:
-            goals += "- [ ] 輕量練習，保持手感\n"
-            goals += "- [ ] 確認考試流程和文件\n"
-            goals += "- [ ] 調整作息\n"
+            goals += "- [ ] 轻量练习，保持手感\n"
+            goals += "- [ ] 确认考试流程和文件\n"
+            goals += "- [ ] 调整作息\n"
 
-    goals += "\n## 本週完成度\n\n"
-    goals += "| 日 | 完成 | 備註 |\n|---|------|------|\n"
+    goals += "\n## 本周完成度\n\n"
+    goals += "| 日 | 完成 | 备注 |\n|---|------|------|\n"
     for d in range(1, 7):
         goals += f"| Day {d} | [ ] | |\n"
     goals += "| Review | [ ] | |\n"
@@ -192,10 +192,10 @@ def create_daily_task(week: int, day: int, total_weeks: int, daily_minutes: int)
     phase = get_phase(week, total_weeks)
     focus_areas = WEEKLY_ROTATION[day - 1] if day <= 6 else ["review"]
 
-    content = f"# 第 {week} 週・Day {day}\n\n"
+    content = f"# 第 {week} 周・Day {day}\n\n"
     content += f"**日期：** ____年____月____日\n"
-    content += f"**預計時間：** {daily_minutes} 分鐘\n"
-    content += f"**今日重點：** {' + '.join(a.capitalize() for a in focus_areas)}\n\n"
+    content += f"**预计时间：** {daily_minutes} 分钟\n"
+    content += f"**今日重点：** {' + '.join(a.capitalize() for a in focus_areas)}\n\n"
     content += "---\n\n"
 
     if day == 7:
@@ -206,8 +206,8 @@ def create_daily_task(week: int, day: int, total_weeks: int, daily_minutes: int)
             content += "\n---\n\n"
 
     content += "## 今日完成度\n\n"
-    content += "- [ ] 完成所有練習\n"
-    content += f"- [ ] 實際花費時間：____ 分鐘\n"
+    content += "- [ ] 完成所有练习\n"
+    content += f"- [ ] 实际花费时间：____ 分钟\n"
     content += "- [ ] 更新 progress.json\n"
 
     return content
@@ -215,54 +215,54 @@ def create_daily_task(week: int, day: int, total_weeks: int, daily_minutes: int)
 
 def create_readme(target: Path, args):
     """Create the main README."""
-    readme = """# 🎯 TOEFL iBT 2026 備考計畫
+    readme = """# 🎯 TOEFL iBT 2026 备考计划
 
 ## Quick Start
 
-1. 每天打開這個資料夾
-2. 啟動 Claude Code
-3. 告訴 Claude：「今天練什麼？」
+1. 每天打开这个资料夹
+2. 启动 AI
+3. 告诉 AI：「今天练什么？」
 
 ## 常用指令
 
-| 指令 | 說明 |
+| 指令 | 说明 |
 |------|------|
-| `今天練什麼？` | 查看今日任務 |
-| `幫我做口說練習` | 產生口說題目 + 評估 |
-| `批改我的寫作` | 提交寫作草稿讓 Claude 批改 |
-| `產生聽力練習` | 用 TTS 產生聽力音檔 |
-| `產生 Anki 單字卡` | 產生本週的 Anki deck |
-| `模擬考` | 開始一次完整模擬考 |
-| `看進度` | 顯示學習進度和統計 |
-| `弱項分析` | 分析各科弱項並給建議 |
+| `今天练什么？` | 查看今日任务 |
+| `帮我做口说练习` | 产生口说题目 + 评估 |
+| `批改我的写作` | 提交写作草稿让 AI 批改 |
+| `产生听力练习` | 用 TTS 产生听力音档 |
+| `产生 Anki 单字卡` | 产生本周的 Anki deck |
+| `模拟考` | 开始一次完整模拟考 |
+| `看进度` | 显示学习进度和统计 |
+| `弱项分析` | 分析各科弱项并给建议 |
 
-## 目標
+## 目标
 
-| 項目 | 設定 |
+| 项目 | 设定 |
 |------|------|
-| 目標分數 | {target_score} |
-| 考試日期 | {exam_date} |
-| 每日時間 | {daily_minutes} 分鐘 |
-| 總週數 | {weeks} 週 |
+| 目标分数 | {target_score} |
+| 考试日期 | {exam_date} |
+| 每日时间 | {daily_minutes} 分钟 |
+| 总周数 | {weeks} 周 |
 
-## 資料夾說明
+## 资料夹说明
 
-- `plan/` — 每週計畫和每日任務
-- `vocabulary/` — 單字表和 Anki deck
-- `reading/` — 閱讀練習
-- `listening/` — 聽力練習（含 TTS 音檔）
-- `speaking/` — 口說練習和回饋
-- `writing/` — 寫作練習和批改
-- `mock-tests/` — 模擬考
+- `plan/` — 每周计划和每日任务
+- `vocabulary/` — 单字表和 Anki deck
+- `reading/` — 阅读练习
+- `listening/` — 听力练习（含 TTS 音档）
+- `speaking/` — 口说练习和回馈
+- `writing/` — 写作练习和批改
+- `mock-tests/` — 模拟考
 
-## 工具安裝
+## 工具安装
 
 ```bash
 pip install edge-tts genanki
 ```
 """.format(
         target_score=args.target_score,
-        exam_date=args.exam_date or "未設定",
+        exam_date=args.exam_date or "未设定",
         daily_minutes=args.daily_minutes,
         weeks=args.weeks,
     )
@@ -303,11 +303,11 @@ def scaffold(args):
         (prep_dir / d).mkdir(parents=True, exist_ok=True)
 
     # Create plan overview
-    overview = "# 12 週備考計畫總覽\n\n"
+    overview = "# 12 周备考计划总览\n\n"
     for phase_key, phase in PHASES.items():
         w1, w2 = phase["weeks"]
-        overview += f"## {phase['name']}（第 {w1}–{w2} 週）\n"
-        overview += f"**重點：** {phase['focus']}\n\n"
+        overview += f"## {phase['name']}（第 {w1}–{w2} 周）\n"
+        overview += f"**重点：** {phase['focus']}\n\n"
     with open(prep_dir / "plan" / "overview.md", "w", encoding="utf-8") as f:
         f.write(overview)
 
@@ -333,11 +333,11 @@ def scaffold(args):
         with open(daily_dir / "review-day.md", "w", encoding="utf-8") as f:
             f.write(review)
 
-    print(f"✅ TOEFL 備考環境已建立：{prep_dir}")
-    print(f"   📅 {args.weeks} 週計畫")
-    print(f"   ⏱️ 每日 {args.daily_minutes} 分鐘")
-    print(f"   🎯 目標分數 {args.target_score}")
-    print(f"\n下一步：進入 {prep_dir} 資料夾，告訴 Claude「今天練什麼？」")
+    print(f"✅ TOEFL 备考环境已建立：{prep_dir}")
+    print(f"   📅 {args.weeks} 周计划")
+    print(f"   ⏱️ 每日 {args.daily_minutes} 分钟")
+    print(f"   🎯 目标分数 {args.target_score}")
+    print(f"\n下一步：进入 {prep_dir} 资料夹，告诉 AI「今天练什么？」")
 
 
 if __name__ == "__main__":

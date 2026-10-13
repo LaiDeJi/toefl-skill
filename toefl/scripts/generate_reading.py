@@ -222,7 +222,7 @@ def generate_complete_words(items: list, output_dir: str, difficulty: list):
     """Generate Complete the Words exercises."""
     filtered = [it for it in items if it["difficulty"] in difficulty]
     if not filtered:
-        print("⚠️ Complete the Words：此難度範圍沒有素材，未改動任何既有練習")
+        print("⚠️ Complete the Words：此难度范围没有素材，未改动任何既有练习")
         return
 
     cw_dir = os.path.join(output_dir, "complete-words")
@@ -257,7 +257,7 @@ def generate_complete_words(items: list, output_dir: str, difficulty: list):
         entries[folder] = {"hash": content_hash(item), "files": entry_files}
 
     for name in commit_manifest(m_path, "complete-words", cw_dir, entries, difficulty):
-        print(f"🗑️ 已移除先前執行留下的過期練習：complete-words/{name}")
+        print(f"🗑️ 已移除先前执行留下的过期练习：complete-words/{name}")
     print(f"✅ Complete the Words：{len(filtered)} exercises")
 
 
@@ -265,7 +265,7 @@ def generate_daily_life(items: list, output_dir: str, difficulty: list):
     """Generate Read in Daily Life exercises."""
     filtered = [it for it in items if it["difficulty"] in difficulty]
     if not filtered:
-        print("⚠️ Read in Daily Life：此難度範圍沒有素材，未改動任何既有練習")
+        print("⚠️ Read in Daily Life：此难度范围没有素材，未改动任何既有练习")
         return
 
     dl_dir = os.path.join(output_dir, "daily-life")
@@ -293,7 +293,7 @@ def generate_daily_life(items: list, output_dir: str, difficulty: list):
         entries[folder] = {"hash": content_hash(item), "files": entry_files}
 
     for name in commit_manifest(m_path, "daily-life", dl_dir, entries, difficulty):
-        print(f"🗑️ 已移除先前執行留下的過期練習：daily-life/{name}")
+        print(f"🗑️ 已移除先前执行留下的过期练习：daily-life/{name}")
     print(f"✅ Read in Daily Life：{len(filtered)} exercises")
 
 
@@ -301,7 +301,7 @@ def generate_academic_passages(items: list, output_dir: str, difficulty: list):
     """Generate Academic Passage exercises."""
     filtered = [it for it in items if it["difficulty"] in difficulty]
     if not filtered:
-        print("⚠️ Academic Passages：此難度範圍沒有素材，未改動任何既有練習")
+        print("⚠️ Academic Passages：此难度范围没有素材，未改动任何既有练习")
         return
 
     ap_dir = os.path.join(output_dir, "academic-passages")
@@ -334,7 +334,7 @@ def generate_academic_passages(items: list, output_dir: str, difficulty: list):
         entries[folder] = {"hash": content_hash(item), "files": entry_files}
 
     for name in commit_manifest(m_path, "academic-passage", ap_dir, entries, difficulty):
-        print(f"🗑️ 已移除先前執行留下的過期練習：academic-passages/{name}")
+        print(f"🗑️ 已移除先前执行留下的过期练习：academic-passages/{name}")
     print(f"✅ Academic Passages：{len(filtered)} exercises")
 
 
@@ -356,7 +356,7 @@ def main():
     if args.type in ("academic", "all"):
         generate_academic_passages(ACADEMIC_PASSAGES, args.output, difficulty)
 
-    print(f"\n📖 閱讀練習已產生於：{args.output}")
+    print(f"\n📖 阅读练习已产生于：{args.output}")
 
 
 if __name__ == "__main__":

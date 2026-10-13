@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-TOEFL 備考系統 — 初始化模組 (init.py)
-首次使用時的引導精靈：問卷、診斷、個人化計畫產生。
+TOEFL 备考系统 — 初始化模组 (init.py)
+首次使用时的引导精灵：问卷、诊断、个人化计划产生。
 
 Usage:
     python init.py --target ./my-study-folder
     python init.py --target . --non-interactive --target-score 5.0 --exam-date 2026-07-15 --daily-minutes 30 --weeks 12
 
-此模組會：
-1. 詢問使用者的基本資訊（目標分數、考試日期、每日可用時間、英語程度自評）
-2. 產生個人化的 config.json
-3. 呼叫 scaffold.py 產生完整資料夾結構
-4. 產生一份簡易診斷測驗（diagnostic quiz）供使用者完成
-5. 輸出「接下來怎麼做」的引導說明
+此模组会：
+1. 询问使用者的基本资讯（目标分数、考试日期、每日可用时间、英语程度自评）
+2. 产生个人化的 config.json
+3. 呼叫 scaffold.py 产生完整资料夹结构
+4. 产生一份简易诊断测验（diagnostic quiz）供使用者完成
+5. 输出「接下来怎么做」的引导说明
 """
 
 import argparse
@@ -26,70 +26,70 @@ from pathlib import Path
 def interactive_onboarding() -> dict:
     """Interactive questionnaire for first-time setup."""
     print("=" * 55)
-    print("🎯 TOEFL iBT 2026 備考系統 — 初始化精靈")
+    print("🎯 TOEFL iBT 2026 备考系统 — 初始化精灵")
     print("=" * 55)
     print()
 
     # Target score
-    print("📊 你的目標分數是多少？（新制 1.0–6.0）")
-    print("   參考：5.0+ 頂尖大學 / 4.0–4.5 一般大學 / 3.5 基本門檻")
+    print("📊 你的目标分数是多少？（新制 1.0–6.0）")
+    print("   参考：5.0+ 顶尖大学 / 4.0–4.5 一般大学 / 3.5 基本门槛")
     while True:
         try:
-            target_score = float(input("   目標分數 [5.0]: ").strip() or "5.0")
+            target_score = float(input("   目标分数 [5.0]: ").strip() or "5.0")
             if 1.0 <= target_score <= 6.0:
                 break
-            print("   ❌ 請輸入 1.0 到 6.0 之間的數字")
+            print("   ❌ 请输入 1.0 到 6.0 之间的数字")
         except ValueError:
-            print("   ❌ 請輸入數字")
+            print("   ❌ 请输入数字")
 
     # Exam date
-    print("\n📅 你的考試日期是？（格式：YYYY-MM-DD，不確定可跳過）")
-    exam_date = input("   考試日期 [留空]: ").strip()
+    print("\n📅 你的考试日期是？（格式：YYYY-MM-DD，不确定可跳过）")
+    exam_date = input("   考试日期 [留空]: ").strip()
     if exam_date:
         try:
             exam_dt = datetime.strptime(exam_date, "%Y-%m-%d").date()
             days_left = (exam_dt - date.today()).days
             if days_left <= 0:
-                print("   ⚠️ 這個日期已過，將設為未定")
+                print("   ⚠️ 这个日期已过，将设为未定")
                 exam_date = ""
             else:
                 weeks_available = days_left // 7
-                print(f"   ✅ 距離考試 {days_left} 天（約 {weeks_available} 週）")
+                print(f"   ✅ 距离考试 {days_left} 天（约 {weeks_available} 周）")
         except ValueError:
-            print("   ⚠️ 日期格式不正確，將設為未定")
+            print("   ⚠️ 日期格式不正确，将设为未定")
             exam_date = ""
 
     # Daily time
-    print("\n⏱️ 你每天可以花多少時間準備？")
-    print("   1) 15 分鐘（零碎時間）")
-    print("   2) 30 分鐘（推薦最低）")
-    print("   3) 45 分鐘")
-    print("   4) 60 分鐘（密集備考）")
-    print("   5) 自訂")
-    choice = input("   選擇 [2]: ").strip() or "2"
+    print("\n⏱️ 你每天可以花多少时间准备？")
+    print("   1) 15 分钟（零碎时间）")
+    print("   2) 30 分钟（推荐最低）")
+    print("   3) 45 分钟")
+    print("   4) 60 分钟（密集备考）")
+    print("   5) 自订")
+    choice = input("   选择 [2]: ").strip() or "2"
     time_map = {"1": 15, "2": 30, "3": 45, "4": 60}
     if choice in time_map:
         daily_minutes = time_map[choice]
     else:
         try:
-            daily_minutes = int(input("   請輸入分鐘數: ").strip())
+            daily_minutes = int(input("   请输入分钟数: ").strip())
         except ValueError:
             daily_minutes = 30
 
     # Self-assessment
-    print("\n📝 你目前的英語程度自評：")
-    print("   1) 初級 — 日常對話有困難")
-    print("   2) 中級 — 能進行基本對話，閱讀簡單文章")
-    print("   3) 中高級 — 能閱讀學術文章，聽懂大部分演講")
-    print("   4) 高級 — 接近流利，偶有文法或詞彙不足")
-    print("   5) 不確定（建議做診斷測驗）")
-    level_choice = input("   選擇 [5]: ").strip() or "5"
+    print("\n📝 你目前的英语程度自评：")
+    print("   1) 初级 — 日常对话有困难")
+    print("   2) 中级 — 能进行基本对话，阅读简单文章")
+    print("   3) 中高级 — 能阅读学术文章，听懂大部分演讲")
+    print("   4) 高级 — 接近流利，偶有文法或词汇不足")
+    print("   5) 不确定（建议做诊断测验）")
+    level_choice = input("   选择 [5]: ").strip() or "5"
     level_map = {"1": "beginner", "2": "intermediate", "3": "upper-intermediate", "4": "advanced", "5": "unknown"}
     self_level = level_map.get(level_choice, "unknown")
 
     # Weak areas
-    print("\n🔍 你覺得自己最弱的是哪一科？（可多選，用逗號分隔）")
-    print("   R=閱讀  L=聽力  S=口說  W=寫作  ?=不確定")
+    print("\n🔍 你觉得自己最弱的是哪一科？（可多选，用逗号分隔）")
+    print("   R=阅读  L=听力  S=口说  W=写作  ?=不确定")
     weak_input = input("   最弱科目 [?]: ").strip().upper() or "?"
     weak_map = {"R": "reading", "L": "listening", "S": "speaking", "W": "writing", "?": "unknown"}
     weak_areas = [weak_map.get(w.strip(), "unknown") for w in weak_input.split(",")]
@@ -97,21 +97,21 @@ def interactive_onboarding() -> dict:
     # Study weeks
     if exam_date:
         weeks = min(max(weeks_available, 4), 16)
-        print(f"\n📅 根據考試日期，建議 {weeks} 週計畫")
+        print(f"\n📅 根据考试日期，建议 {weeks} 周计划")
     else:
-        print("\n📅 你想要幾週的計畫？")
-        print("   建議：8 週（短期衝刺）/ 12 週（標準）/ 16 週（充裕）")
+        print("\n📅 你想要几周的计划？")
+        print("   建议：8 周（短期冲刺）/ 12 周（标准）/ 16 周（充裕）")
         try:
-            weeks = int(input("   週數 [12]: ").strip() or "12")
+            weeks = int(input("   周数 [12]: ").strip() or "12")
             weeks = min(max(weeks, 4), 24)
         except ValueError:
             weeks = 12
 
     # TTS preference
-    print("\n🔊 聽力練習的 TTS 引擎：")
-    print("   1) edge-tts（需網路，品質好，免費）← 推薦")
-    print("   2) Kokoro（離線，需下載模型約 200MB）")
-    tts_choice = input("   選擇 [1]: ").strip() or "1"
+    print("\n🔊 听力练习的 TTS 引擎：")
+    print("   1) edge-tts（需网路，品质好，免费）← 推荐")
+    print("   2) Kokoro（离线，需下载模型约 200MB）")
+    tts_choice = input("   选择 [1]: ").strip() or "1"
     tts_engine = "edge-tts" if tts_choice == "1" else "kokoro"
 
     return {
@@ -158,23 +158,23 @@ def generate_config(target: Path, params: dict):
 def generate_diagnostic(target: Path):
     """Generate a diagnostic quiz for baseline assessment."""
     diagnostic = {
-        "title": "TOEFL 2026 診斷測驗",
-        "instructions": "這不是正式模擬考，而是快速評估你的起始程度。每科 5 題，約 15-20 分鐘。",
+        "title": "TOEFL 2026 诊断测验",
+        "instructions": "这不是正式模拟考，而是快速评估你的起始程度。每科 5 题，约 15-20 分钟。",
         "sections": {
             "reading": {
-                "description": "閱讀理解（5 題）",
+                "description": "阅读理解（5 题）",
                 "questions": [
                     {
                         "type": "complete_words",
                         "prompt": "The researcher's hyp_th_sis was supported by the experimental data.",
                         "answer": "hypothesis",
-                        "explanation": "hypothesis = 假說。注意 y 和 e 的位置。"
+                        "explanation": "hypothesis = 假说。注意 y 和 e 的位置。"
                     },
                     {
                         "type": "complete_words",
                         "prompt": "Environmental sust__n_bility requires both individual and collective action.",
                         "answer": "sustainability",
-                        "explanation": "sustainability = 永續性。注意 ai 和 a 的位置。"
+                        "explanation": "sustainability = 永续性。注意 ai 和 a 的位置。"
                     },
                     {
                         "type": "daily_life",
@@ -200,7 +200,7 @@ def generate_diagnostic(target: Path):
                 ],
             },
             "writing": {
-                "description": "寫作能力（2 題）",
+                "description": "写作能力（2 题）",
                 "questions": [
                     {
                         "type": "build_a_sentence",
@@ -216,7 +216,7 @@ def generate_diagnostic(target: Path):
                 ],
             },
             "speaking": {
-                "description": "口說能力（2 題）— 請錄音或打字回答",
+                "description": "口说能力（2 题）— 请录音或打字回答",
                 "questions": [
                     {
                         "type": "interview",
@@ -239,14 +239,14 @@ def generate_diagnostic(target: Path):
         json.dump(diagnostic, f, indent=2, ensure_ascii=False)
 
     # Also create a human-readable version
-    md = "# 🏥 TOEFL 2026 診斷測驗\n\n"
-    md += "> 約 15–20 分鐘，用來評估你的起始程度\n\n"
+    md = "# 🏥 TOEFL 2026 诊断测验\n\n"
+    md += "> 约 15–20 分钟，用来评估你的起始程度\n\n"
     md += "---\n\n"
 
     for section_key, section in diagnostic["sections"].items():
         md += f"## {section['description']}\n\n"
         for i, q in enumerate(section["questions"], 1):
-            md += f"### 題 {i} ({q['type']})\n\n"
+            md += f"### 题 {i} ({q['type']})\n\n"
             if q["type"] == "complete_words":
                 md += f"填入缺漏的字母：\n\n`{q['prompt']}`\n\n"
                 md += f"<details><summary>答案</summary>\n\n{q['answer']}\n\n{q.get('explanation', '')}\n\n</details>\n\n"
@@ -265,18 +265,18 @@ def generate_diagnostic(target: Path):
                 md += f"<details><summary>答案</summary>\n\n{q['answer']}\n\n</details>\n\n"
             elif q["type"] == "email":
                 md += f"**情境：** {q['prompt']}\n\n"
-                md += f"**時間限制：** {q['time_limit']}\n\n"
-                md += "（請在下方或 `writing/drafts/diagnostic-email.md` 中作答）\n\n"
+                md += f"**时间限制：** {q['time_limit']}\n\n"
+                md += "（请在下方或 `writing/drafts/diagnostic-email.md` 中作答）\n\n"
             elif q["type"] == "interview":
-                md += f"**題目：** {q['prompt']}\n\n"
-                md += f"**時間限制：** {q['time_limit']}\n\n"
-                md += "（請錄音或在 `speaking/feedback/diagnostic.md` 中打字回答）\n\n"
+                md += f"**题目：** {q['prompt']}\n\n"
+                md += f"**时间限制：** {q['time_limit']}\n\n"
+                md += "（请录音或在 `speaking/feedback/diagnostic.md` 中打字回答）\n\n"
             md += "---\n\n"
 
     with open(diag_dir / "diagnostic-quiz.md", "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"   📋 診斷測驗已產生：{diag_dir}")
+    print(f"   📋 诊断测验已产生：{diag_dir}")
 
 
 def print_next_steps(target: Path, config: dict):
@@ -286,36 +286,36 @@ def print_next_steps(target: Path, config: dict):
     print("✅ 初始化完成！")
     print("=" * 55)
     print()
-    print(f"📂 備考資料夾：{target}")
-    print(f"🎯 目標分數：{config['target_score']}")
-    print(f"📅 考試日期：{config.get('exam_date') or '未設定'}")
-    print(f"⏱️ 每日時間：{config['daily_minutes']} 分鐘")
-    print(f"📅 計畫週數：{config['total_weeks']} 週")
+    print(f"📂 备考资料夹：{target}")
+    print(f"🎯 目标分数：{config['target_score']}")
+    print(f"📅 考试日期：{config.get('exam_date') or '未设定'}")
+    print(f"⏱️ 每日时间：{config['daily_minutes']} 分钟")
+    print(f"📅 计划周数：{config['total_weeks']} 周")
     print(f"🔊 TTS 引擎：{config['tts_engine']}")
     print()
-    print("📋 接下來的步驟：")
+    print("📋 接下来的步骤：")
     print()
-    print("  1️⃣  完成診斷測驗")
-    print(f"     打開 mock-tests/diagnostic/diagnostic-quiz.md")
-    print(f"     告訴 Claude：「我完成診斷測驗了，幫我評估」")
+    print("  1️⃣  完成诊断测验")
+    print(f"     打开 mock-tests/diagnostic/diagnostic-quiz.md")
+    print(f"     告诉 AI：「我完成诊断测验了，帮我评估」")
     print()
-    print("  2️⃣  安裝必要工具")
+    print("  2️⃣  安装必要工具")
     print(f"     pip install edge-tts genanki")
     print()
-    print("  3️⃣  開始每日練習")
-    print(f"     告訴 Claude：「今天練什麼？」")
+    print("  3️⃣  开始每日练习")
+    print(f"     告诉 AI：「今天练什么？」")
     print()
-    print("  💡 隨時可以說：")
-    print("     「幫我做口說練習」")
-    print("     「批改我的寫作」")
-    print("     「產生本週 Anki 單字卡」")
-    print("     「看我的進度」")
-    print("     「做模擬考」")
+    print("  💡 随时可以说：")
+    print("     「帮我做口说练习」")
+    print("     「批改我的写作」")
+    print("     「产生本周 Anki 单字卡」")
+    print("     「看我的进度」")
+    print("     「做模拟考」")
     print()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 備考系統初始化")
+    parser = argparse.ArgumentParser(description="TOEFL 备考系统初始化")
     parser.add_argument("--target", default=".", help="Target directory")
     parser.add_argument("--non-interactive", action="store_true", help="Skip interactive prompts")
     parser.add_argument("--target-score", type=float, default=5.0)
@@ -332,9 +332,9 @@ def main():
         with open(config_path, "r") as f:
             existing = json.load(f)
         if existing.get("initialized"):
-            print("⚠️ 此資料夾已經初始化過了。")
-            print(f"   config.json 建立於 {existing.get('created', '?')}")
-            choice = input("   要重新初始化嗎？(y/N): ").strip().lower()
+            print("⚠️ 此资料夹已经初始化过了。")
+            print(f"   config.json 建立于 {existing.get('created', '?')}")
+            choice = input("   要重新初始化吗？(y/N): ").strip().lower()
             if choice != "y":
                 print("   取消。")
                 return
@@ -354,7 +354,7 @@ def main():
         params = interactive_onboarding()
 
     # Run scaffold
-    print("\n🔧 正在建立備考環境...")
+    print("\n🔧 正在建立备考环境...")
     from scaffold import scaffold as run_scaffold
 
     class ScaffoldArgs:
@@ -374,7 +374,7 @@ def main():
     config = generate_config(prep_dir, params)
 
     # Generate diagnostic
-    print("   📋 正在產生診斷測驗...")
+    print("   📋 正在产生诊断测验...")
     generate_diagnostic(prep_dir)
 
     # Print next steps

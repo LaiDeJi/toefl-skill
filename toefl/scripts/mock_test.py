@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-TOEFL 備考系統 — 模擬考模組 (mock_test.py)
-產生並管理完整的 TOEFL 模擬考。
+TOEFL 备考系统 — 模拟考模组 (mock_test.py)
+产生并管理完整的 TOEFL 模拟考。
 
 Usage:
-    python mock_test.py --target ./toefl-prep/ --action create   # 產生新模擬考
+    python mock_test.py --target ./toefl-prep/ --action create   # 产生新模拟考
     python mock_test.py --target ./toefl-prep/ --action score --test 1 --reading 4.5 --listening 5.0 --speaking 4.0 --writing 4.5
-    python mock_test.py --target ./toefl-prep/ --action history   # 查看歷次成績
+    python mock_test.py --target ./toefl-prep/ --action history   # 查看历次成绩
 """
 
 import argparse
@@ -28,87 +28,87 @@ def create_mock_test(target: str):
     os.makedirs(test_dir, exist_ok=True)
 
     # Create test instruction file
-    instructions = f"""# 📝 TOEFL 模擬考 #{test_num}
+    instructions = f"""# 📝 TOEFL 模拟考 #{test_num}
 
 **日期：** {datetime.now().strftime('%Y-%m-%d')}
-**總時間：** 約 90 分鐘
+**总时间：** 约 90 分钟
 
 ---
 
-## ⚙️ 考試前設定
+## ⚙️ 考试前设定
 
-- [ ] 找一個安靜的地方
-- [ ] 準備好計時器
-- [ ] 準備紙筆（聽力筆記用）
-- [ ] 關閉手機通知
-
----
-
-## 📖 Section 1: Reading（18–27 分鐘）
-
-請告訴 Claude：「開始模擬考閱讀」
-
-Claude 會產生：
-- Complete the Words 題目
-- Read in Daily Life 題目
-- Academic Passage 題目
-
-**重要：** 模擬 Module 1 → Module 2 的感覺。
-前半段認真作答，正確率會影響後半段難度。
+- [ ] 找一个安静的地方
+- [ ] 准备好计时器
+- [ ] 准备纸笔（听力笔记用）
+- [ ] 关闭手机通知
 
 ---
 
-## 🎧 Section 2: Listening（18–27 分鐘）
+## 📖 Section 1: Reading（18–27 分钟）
 
-請告訴 Claude：「開始模擬考聽力」
+请告诉 AI：「开始模拟考阅读」
 
-Claude 會產生音檔（需 edge-tts）或唸出內容：
+AI 会产生：
+- Complete the Words 题目
+- Read in Daily Life 题目
+- Academic Passage 题目
+
+**重要：** 模拟 Module 1 → Module 2 的感觉。
+前半段认真作答，正确率会影响后半段难度。
+
+---
+
+## 🎧 Section 2: Listening（18–27 分钟）
+
+请告诉 AI：「开始模拟考听力」
+
+AI 会产生音档（需 edge-tts）或念出内容：
 - Choose a Response
 - Conversations
 - Announcements
-- Academic Talks（如果進入 Hard 路線）
+- Academic Talks（如果进入 Hard 路线）
 
-**重要：** 音檔只聽一次，不可倒帶。
-
----
-
-## 🎤 Section 3: Speaking（約 10 分鐘）
-
-請告訴 Claude：「開始模擬考口說」
-
-- Listen & Repeat：7 句跟讀
-- Take an Interview：4 題即興回答（每題 45 秒）
-
-**重要：** 沒有準備時間！
+**重要：** 音档只听一次，不可倒带。
 
 ---
 
-## ✍️ Section 4: Writing（約 23 分鐘）
+## 🎤 Section 3: Speaking（约 10 分钟）
 
-請告訴 Claude：「開始模擬考寫作」
+请告诉 AI：「开始模拟考口说」
 
-- Build a Sentence：10 題（約 7 分鐘）
-- Write an Email：1 題（7 分鐘）
-- Academic Discussion：1 題（10 分鐘）
+- Listen & Repeat：7 句跟读
+- Take an Interview：4 题即兴回答（每题 45 秒）
+
+**重要：** 没有准备时间！
 
 ---
 
-## 📊 考後評分
+## ✍️ Section 4: Writing（约 23 分钟）
 
-完成所有科目後，請告訴 Claude：「模擬考結束，幫我評分」
+请告诉 AI：「开始模拟考写作」
 
-Claude 會：
-1. 批改閱讀和聽力（客觀題）
-2. 評估口說（依 rubric）
-3. 批改寫作（依 rubric）
-4. 產生成績報告
+- Build a Sentence：10 题（约 7 分钟）
+- Write an Email：1 题（7 分钟）
+- Academic Discussion：1 题（10 分钟）
+
+---
+
+## 📊 考后评分
+
+完成所有科目后，请告诉 AI：「模拟考结束，帮我评分」
+
+AI 会：
+1. 批改阅读和听力（客观题）
+2. 评估口说（依 rubric）
+3. 批改写作（依 rubric）
+4. 产生成绩报告
 5. 更新 progress.json
 
 ---
 
-## 📋 成績記錄
+## 📋 成绩记录
 
-| 科目 | 分數 (1–6) | 備註 |
+| 科目 | 分数 (1–6) | 备注 |
 |------|-----------|------|
 | Reading | | |
 | Listening | | |
@@ -116,15 +116,15 @@ Claude 會：
 | Writing | | |
 | **Total** | | |
 
-## 檢討筆記
+## 检讨笔记
 
 ### 做得好的：
 
 
-### 需要改進的：
+### 需要改进的：
 
 
-### 下次模擬考前要特別練習的：
+### 下次模拟考前要特别练习的：
 
 """
 
@@ -152,9 +152,9 @@ Claude 會：
     with open(os.path.join(test_dir, "result.json"), "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ 模擬考 #{test_num} 已建立：{test_dir}")
-    print(f"   打開 instructions.md 開始考試")
-    print(f"   或告訴 Claude：「開始模擬考」")
+    print(f"✅ 模拟考 #{test_num} 已建立：{test_dir}")
+    print(f"   打开 instructions.md 开始考试")
+    print(f"   或告诉 AI：「开始模拟考」")
     return test_dir
 
 
@@ -164,7 +164,7 @@ def score_mock_test(target: str, test_num: int, reading: float, listening: float
     result_path = os.path.join(test_dir, "result.json")
 
     if not os.path.exists(result_path):
-        print(f"❌ 找不到模擬考 #{test_num}")
+        print(f"❌ 找不到模拟考 #{test_num}")
         return
 
     result = json.load(open(result_path, "r"))
@@ -211,7 +211,7 @@ def score_mock_test(target: str, test_num: int, reading: float, listening: float
             json.dump(progress, f, indent=2, ensure_ascii=False)
 
     # Print report
-    print(f"\n📊 模擬考 #{test_num} 成績報告")
+    print(f"\n📊 模拟考 #{test_num} 成绩报告")
     print("=" * 40)
     print(f"  Reading:   {reading:.1f}")
     print(f"  Listening: {listening:.1f}")
@@ -223,21 +223,21 @@ def score_mock_test(target: str, test_num: int, reading: float, listening: float
 
     # CEFR mapping
     if total >= 5.0:
-        print("  CEFR: C1 — 流暢學術交流 🌟")
+        print("  CEFR: C1 — 流畅学术交流 🌟")
     elif total >= 4.0:
-        print("  CEFR: B2 — 獨立使用者 👍")
+        print("  CEFR: B2 — 独立使用者 👍")
     elif total >= 3.0:
-        print("  CEFR: B1 — 中級 📚")
+        print("  CEFR: B1 — 中级 📚")
     else:
-        print("  CEFR: A2/B1 — 需要更多練習 💪")
+        print("  CEFR: A2/B1 — 需要更多练习 💪")
 
     # Weak area analysis
     scores = {"reading": reading, "listening": listening, "speaking": speaking, "writing": writing}
     weakest = min(scores, key=scores.get)
     strongest = max(scores, key=scores.get)
-    print(f"\n  💪 最強科目：{strongest.capitalize()} ({scores[strongest]:.1f})")
+    print(f"\n  💪 最强科目：{strongest.capitalize()} ({scores[strongest]:.1f})")
     print(f"  ⚠️  最弱科目：{weakest.capitalize()} ({scores[weakest]:.1f})")
-    print(f"  📌 建議：集中加強 {weakest.capitalize()}")
+    print(f"  📌 建议：集中加强 {weakest.capitalize()}")
 
 
 def show_history(target: str):
@@ -251,11 +251,11 @@ def show_history(target: str):
     mocks = progress.get("mock_tests", [])
 
     if not mocks:
-        print("📝 還沒有模擬考記錄。")
-        print("   執行 mock_test.py --action create 開始第一次模擬考")
+        print("📝 还没有模拟考记录。")
+        print("   执行 mock_test.py --action create 开始第一次模拟考")
         return
 
-    print("\n📊 模擬考歷史")
+    print("\n📊 模拟考历史")
     print("=" * 65)
     print(f"{'#':<4} {'日期':<12} {'R':<6} {'L':<6} {'S':<6} {'W':<6} {'Total':<6}")
     print("-" * 65)
@@ -267,7 +267,7 @@ def show_history(target: str):
         first = mocks[0]
         last = mocks[-1]
         diff = last["total"] - first["total"]
-        print(f"\n📈 進步幅度：{diff:+.1f}（第一次 {first['total']:.1f} → 最新 {last['total']:.1f}）")
+        print(f"\n📈 进步幅度：{diff:+.1f}（第一次 {first['total']:.1f} → 最新 {last['total']:.1f}）")
 
         for section in ["reading", "listening", "speaking", "writing"]:
             s_diff = last[section] - first[section]
@@ -276,7 +276,7 @@ def show_history(target: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 模擬考模組")
+    parser = argparse.ArgumentParser(description="TOEFL 模拟考模组")
     parser.add_argument("--target", default="./toefl-prep/")
     parser.add_argument("--action", choices=["create", "score", "history"], default="create")
     parser.add_argument("--test", type=int, help="Test number (for scoring)")

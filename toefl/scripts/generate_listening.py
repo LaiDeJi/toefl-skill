@@ -39,7 +39,7 @@ from run_guard import (
 try:
     import edge_tts
 except ImportError:
-    print("❌ edge-tts 未安裝。請執行：uv pip install edge-tts")
+    print("❌ edge-tts 未安装。请执行：uv pip install edge-tts")
     sys.exit(1)
 
 # ── Voice Profiles ──────────────────────────────────────────
@@ -79,15 +79,15 @@ async def validate_voices():
         voices = await edge_tts.list_voices()
     except Exception as e:
         # Service unreachable: fail open, the render itself will report errors.
-        print(f"⚠️ 無法取得語音清單（{type(e).__name__}: {e}），略過語音檢查")
+        print(f"⚠️ 无法取得语音清单（{type(e).__name__}: {e}），略过语音检查")
         return
     available = {v["ShortName"] for v in voices}
     retired = [(key, v["id"]) for key, v in VOICES.items() if v["id"] not in available]
     if retired:
-        print("❌ 以下語音 ID 不存在於 edge-tts 服務（可能已被 Microsoft 停用）：")
+        print("❌ 以下语音 ID 不存在于 edge-tts 服务（可能已被 Microsoft 停用）：")
         for key, vid in retired:
             print(f"  - {key}: {vid}")
-        print("   請更新 VOICES 中的語音 ID（可用 edge_tts.list_voices() 查詢）。")
+        print("   请更新 VOICES 中的语音 ID（可用 edge_tts.list_voices() 查询）。")
         raise SystemExit(1)
 
 # ── Content: Choose a Response (Module 1 staple) ─────────────
@@ -332,7 +332,7 @@ async def tts_to_file(text: str, voice_key: str, output_path: str):
             last_err = e
             if attempt < 3:
                 await asyncio.sleep(attempt)  # 1s, 2s backoff before next try
-    print(f"❌ 語音合成失敗（已重試 2 次）：{voice_key}（{v['id']}）— {type(last_err).__name__}: {last_err}")
+    print(f"❌ 语音合成失败（已重试 2 次）：{voice_key}（{v['id']}）— {type(last_err).__name__}: {last_err}")
     raise last_err
 
 
@@ -382,7 +382,7 @@ async def build_conversation_audio(conv: dict, output_dir: str) -> list:
             if os.path.exists(src):
                 os.rename(src, dst)
                 written.append(f"line-{i:02d}.mp3")
-        print(f"  ⚠️ 無法合併，已保留個別音檔")
+        print(f"  ⚠️ 无法合并，已保留个别音档")
 
     # Cleanup tmp
     import shutil
@@ -567,7 +567,7 @@ async def generate_all(args):
     if args.type in ("choose-response", "all"):
         items = [it for it in CHOOSE_RESPONSE_ITEMS if it["difficulty"] in allowed]
         if not items:
-            print("⚠️ Choose a Response：此難度範圍沒有素材，未改動任何既有練習")
+            print("⚠️ Choose a Response：此难度范围没有素材，未改动任何既有练习")
         else:
             cr_dir = base / "choose-response"
             str_cr = str(cr_dir)
@@ -583,17 +583,17 @@ async def generate_all(args):
                     written = await build_choose_response_audio(item, item_dir)
                     entries[folder] = {"hash": ih, "files": written}
                 else:
-                    print(f"✅ Choose a Response {i+1}：內容未變，沿用既有音檔")
+                    print(f"✅ Choose a Response {i+1}：内容未变，沿用既有音档")
                     entries[folder] = entry
                 write_exercise_meta(item, item_dir, "choose-response")
             for name in commit_manifest(m_path, "choose-response", str_cr, entries, allowed):
-                print(f"🗑️ 已移除先前執行留下的過期練習：choose-response/{name}")
-            print(f"✅ Choose a Response：{len(items)} 題已產生")
+                print(f"🗑️ 已移除先前执行留下的过期练习：choose-response/{name}")
+            print(f"✅ Choose a Response：{len(items)} 题已产生")
 
     if args.type in ("conversation", "all"):
         convs = [c for c in CONVERSATIONS if c["difficulty"] in allowed]
         if not convs:
-            print("⚠️ Conversation：此難度範圍沒有素材，未改動任何既有對話")
+            print("⚠️ Conversation：此难度范围没有素材，未改动任何既有对话")
         else:
             str_base = str(base)
             m_path = os.path.join(str_base, typed_manifest_name("conversation"))
@@ -609,16 +609,16 @@ async def generate_all(args):
                     entries[folder] = {"hash": ih, "files": written}
                     print(f"✅ Conversation {i+1}: {conv['title']}")
                 else:
-                    print(f"✅ Conversation {i+1}: {conv['title']}（內容未變，沿用既有音檔）")
+                    print(f"✅ Conversation {i+1}: {conv['title']}（内容未变，沿用既有音档）")
                     entries[folder] = entry
                 write_exercise_meta(conv, conv_dir, "conversation")
             for name in commit_manifest(m_path, "conversation", str_base, entries, allowed):
-                print(f"🗑️ 已移除先前執行留下的過期練習：{name}")
+                print(f"🗑️ 已移除先前执行留下的过期练习：{name}")
 
     if args.type in ("announcement", "all"):
         anns = [a for a in ANNOUNCEMENTS if a["difficulty"] in allowed]
         if not anns:
-            print("⚠️ Announcement：此難度範圍沒有素材，未改動任何既有公告")
+            print("⚠️ Announcement：此难度范围没有素材，未改动任何既有公告")
         else:
             str_base = str(base)
             m_path = os.path.join(str_base, typed_manifest_name("announcement"))
@@ -633,17 +633,17 @@ async def generate_all(args):
                     written = await build_academic_talk_audio(ann, ann_dir)
                     entries[folder] = {"hash": ih, "files": written}
                 else:
-                    print(f"✅ Announcement {i+1}: {ann['title']}（內容未變，沿用既有音檔）")
+                    print(f"✅ Announcement {i+1}: {ann['title']}（内容未变，沿用既有音档）")
                     entries[folder] = entry
                 write_exercise_meta(ann, ann_dir, "announcement")
                 print(f"✅ Announcement {i+1}: {ann['title']}")
             for name in commit_manifest(m_path, "announcement", str_base, entries, allowed):
-                print(f"🗑️ 已移除先前執行留下的過期練習：{name}")
+                print(f"🗑️ 已移除先前执行留下的过期练习：{name}")
 
     if args.type in ("academic", "all"):
         talks = [t for t in ACADEMIC_TALKS if t["difficulty"] in allowed]
         if not talks:
-            print("⚠️ Academic Talk：此難度範圍沒有素材，未改動任何既有演講")
+            print("⚠️ Academic Talk：此难度范围没有素材，未改动任何既有演讲")
         else:
             str_base = str(base)
             m_path = os.path.join(str_base, typed_manifest_name("academic"))
@@ -658,14 +658,14 @@ async def generate_all(args):
                     written = await build_academic_talk_audio(talk, talk_dir)
                     entries[folder] = {"hash": ih, "files": written}
                 else:
-                    print(f"✅ Academic Talk {i+1}: {talk['title']}（內容未變，沿用既有音檔）")
+                    print(f"✅ Academic Talk {i+1}: {talk['title']}（内容未变，沿用既有音档）")
                     entries[folder] = entry
                 write_exercise_meta(talk, talk_dir, "academic-talk")
                 print(f"✅ Academic Talk {i+1}: {talk['title']}")
             for name in commit_manifest(m_path, "academic", str_base, entries, allowed):
-                print(f"🗑️ 已移除先前執行留下的過期練習：{name}")
+                print(f"🗑️ 已移除先前执行留下的过期练习：{name}")
 
-    print(f"\n🎧 聽力練習已產生於：{base}")
+    print(f"\n🎧 听力练习已产生于：{base}")
 
 
 if __name__ == "__main__":

@@ -1,91 +1,91 @@
 ---
 name: toefl
 description: >
-  TOEFL iBT 2026 備考教練與學習系統。在空白資料夾中自動展開完整的 12 週學習計畫、
-  每日訓練素材、進度追蹤、模擬考、Anki 單字卡生成、TTS 聽力練習、口說評估、寫作批改。
-  當使用者提到 TOEFL、托福、英語檢定備考、英文考試準備、托福口說練習、托福寫作批改、
-  托福聽力訓練、托福閱讀練習、托福模擬考、TOEFL mock test、TOEFL study plan、
-  /toefl、或任何與 TOEFL 考試相關的學習需求時，務必觸發此技能。
-  即使使用者只是說「幫我準備英文考試」或「我要考托福」也應觸發。
+  TOEFL iBT 2026 备考教练与学习系统。在空白资料夹中自动展开完整的 12 周学习计划、
+  每日训练素材、进度追踪、模拟考、Anki 单字卡生成、TTS 听力练习、口说评估、写作批改。
+  当使用者提到 TOEFL、托福、英语检定备考、英文考试准备、托福口说练习、托福写作批改、
+  托福听力训练、托福阅读练习、托福模拟考、TOEFL mock test、TOEFL study plan、
+  /toefl、或任何与 TOEFL 考试相关的学习需求时，务必触发此技能。
+  即使使用者只是说「帮我准备英文考试」或「我要考托福」也应触发。
 ---
 
-# TOEFL iBT 2026 備考教練
+# TOEFL iBT 2026 备考教练
 
-一套 Claude Code 驅動的模組化 TOEFL 備考系統。
+一套 AI 驱动的模组化 TOEFL 备考系统。
 
-## 模組總覽
+## 模组总览
 
-本技能由 8 個獨立模組組成，採用 progressive disclosure——只在需要時才讀取對應模組。
+本技能由 8 个独立模组组成，采用 progressive disclosure——只在需要时才读取对应模组。
 
 ```
 toefl/
-├── SKILL.md                          ← 你現在在這裡（路由器）
+├── SKILL.md                          ← 你现在在这里（路由器）
 ├── scripts/
-│   ├── init.py                       ← 🏁 初始化模組
-│   ├── daily.py                      ← 📅 每日追蹤模組
-│   ├── scaffold.py                   ← 🔧 資料夾結構產生器（由 init.py 呼叫）
-│   ├── progress.py                   ← 📊 進度追蹤與統計
-│   ├── adaptive.py                   ← 🧠 自適應引擎（動態調整難度與時間分配）
-│   ├── speaking_coach.py             ← 🎤 口說教練模組
-│   ├── writing_grader.py             ← ✍️ 寫作批改模組
-│   ├── mock_test.py                  ← 📝 模擬考模組
-│   ├── generate_listening.py         ← 🎧 聽力素材產生器
-│   └── generate_anki.py              ← 📚 Anki 單字卡產生器
+│   ├── init.py                       ← 🏁 初始化模组
+│   ├── daily.py                      ← 📅 每日追踪模组
+│   ├── scaffold.py                   ← 🔧 资料夹结构产生器（由 init.py 呼叫）
+│   ├── progress.py                   ← 📊 进度追踪与统计
+│   ├── adaptive.py                   ← 🧠 自适应引擎（动态调整难度与时间分配）
+│   ├── speaking_coach.py             ← 🎤 口说教练模组
+│   ├── writing_grader.py             ← ✍️ 写作批改模组
+│   ├── mock_test.py                  ← 📝 模拟考模组
+│   ├── generate_listening.py         ← 🎧 听力素材产生器
+│   └── generate_anki.py              ← 📚 Anki 单字卡产生器
 └── references/
     ├── exam-format-2026.md           ← 📋 2026 新制完整格式
-    ├── study-plan-12week.md          ← 📅 12 週計畫模板
-    ├── scoring-rubrics.md            ← 📏 ETS 評分標準
-    ├── vocabulary-core.md            ← 📖 核心學術字彙
-    └── resources-guide.md            ← 🔗 備考素材完整指南（官方+免費+工具）
+    ├── study-plan-12week.md          ← 📅 12 周计划模板
+    ├── scoring-rubrics.md            ← 📏 ETS 评分标准
+    ├── vocabulary-core.md            ← 📖 核心学术字汇
+    └── resources-guide.md            ← 🔗 备考素材完整指南（官方+免费+工具）
 ```
 
 ---
 
-## 路由邏輯
+## 路由逻辑
 
-根據使用者的意圖，選擇對應模組：
+根据使用者的意图，选择对应模组：
 
 ### 🏁 首次使用 / 初始化
-**觸發詞：** `/toefl`、「開始準備托福」、「建立學習計畫」、初次進入空白資料夾
-**動作：**
-1. 執行 `scripts/init.py`（引導問卷 → 產生 config → 建立資料夾 → 產生診斷考）
-2. 如果非互動環境，用 `--non-interactive` 搭配參數
+**触发词：** `/toefl`、「开始准备托福」、「建立学习计划」、初次进入空白资料夹
+**动作：**
+1. 执行 `scripts/init.py`（引导问卷 → 产生 config → 建立资料夹 → 产生诊断考）
+2. 如果非互动环境，用 `--non-interactive` 搭配参数
 
 ```bash
 python scripts/init.py --target .
-# 或非互動模式
+# 或非互动模式
 python scripts/init.py --target . --non-interactive --target-score 5.0 --exam-date 2026-07-15
 ```
 
-### 📅 每日進入 / 今天練什麼
-**觸發詞：** 「今天練什麼」、「開始練習」、進入已初始化的資料夾
-**動作：**
-1. 執行 `scripts/daily.py --target ./toefl-prep/`
-2. 顯示今日任務、連續天數、倒數計時
-3. 引導完成各項練習
+### 📅 每日进入 / 今天练什么
+**触发词：** 「今天练什么」、「开始练习」、进入已初始化的资料夹
+**动作：**
+1. 执行 `scripts/daily.py --target ./toefl-prep/`
+2. 显示今日任务、连续天数、倒数计时
+3. 引导完成各项练习
 
 ```bash
-python scripts/daily.py --target ./toefl-prep/           # 顯示今日任務
-python scripts/daily.py --target ./toefl-prep/ --complete  # 標記完成
-python scripts/daily.py --target ./toefl-prep/ --advance   # 推進下一天
-python scripts/daily.py --target ./toefl-prep/ --status    # 本週總覽
+python scripts/daily.py --target ./toefl-prep/           # 显示今日任务
+python scripts/daily.py --target ./toefl-prep/ --complete  # 标记完成
+python scripts/daily.py --target ./toefl-prep/ --advance   # 推进下一天
+python scripts/daily.py --target ./toefl-prep/ --status    # 本周总览
 ```
 
-### 📊 看進度 / 弱項分析
-**觸發詞：** 「看進度」、「我的成績」、「弱項分析」
-**動作：** 執行 `scripts/progress.py --action show --target ./toefl-prep/`
+### 📊 看进度 / 弱项分析
+**触发词：** 「看进度」、「我的成绩」、「弱项分析」
+**动作：** 执行 `scripts/progress.py --action show --target ./toefl-prep/`
 
 ```bash
 python scripts/progress.py --action show --target ./toefl-prep/
 python scripts/progress.py --action log --target ./toefl-prep/ --minutes 30 --section reading --score 4.5
 ```
 
-### 🎤 口說練習
-**觸發詞：** 「口說練習」、「練口說」、「speaking practice」
-**動作：**
-1. 執行 `scripts/speaking_coach.py` 產生題目
-2. 如需音檔，執行 `scripts/generate_speaking.py` 產生 TTS（`--type repeat` / `interview`）
-3. 使用者完成後，讀取 `references/scoring-rubrics.md` 的口說段落進行評估
+### 🎤 口说练习
+**触发词：** 「口说练习」、「练口说」、「speaking practice」
+**动作：**
+1. 执行 `scripts/speaking_coach.py` 产生题目
+2. 如需音档，执行 `scripts/generate_speaking.py` 产生 TTS（`--type repeat` / `interview`）
+3. 使用者完成后，读取 `references/scoring-rubrics.md` 的口说段落进行评估
 
 ```bash
 python scripts/speaking_coach.py --type full --output ./toefl-prep/speaking/
@@ -93,17 +93,17 @@ python scripts/speaking_coach.py --type repeat --output ./toefl-prep/speaking/
 python scripts/speaking_coach.py --type interview --output ./toefl-prep/speaking/ --topic technology
 ```
 
-**Claude 評估口說回答時：**
-- 讀取 `references/scoring-rubrics.md` 的 Speaking 段落
-- Listen & Repeat：檢查 Repeat Accuracy / Fluency / Intelligibility
-- Interview：檢查 Fluency / Intelligibility / Language Use / Organization
-- 使用標準回饋格式（rubric 檔案底部有模板）
+**AI 评估口说回答时：**
+- 读取 `references/scoring-rubrics.md` 的 Speaking 段落
+- Listen & Repeat：检查 Repeat Accuracy / Fluency / Intelligibility
+- Interview：检查 Fluency / Intelligibility / Language Use / Organization
+- 使用标准回馈格式（rubric 档案底部有模板）
 
-### ✍️ 寫作練習 / 批改
-**觸發詞：** 「寫作練習」、「批改我的寫作」、「練寫作」、「writing practice」
-**動作：**
-1. 執行 `scripts/writing_grader.py` 產生題目
-2. 使用者完成後，讀取 `references/scoring-rubrics.md` 的寫作段落進行批改
+### ✍️ 写作练习 / 批改
+**触发词：** 「写作练习」、「批改我的写作」、「练写作」、「writing practice」
+**动作：**
+1. 执行 `scripts/writing_grader.py` 产生题目
+2. 使用者完成后，读取 `references/scoring-rubrics.md` 的写作段落进行批改
 
 ```bash
 python scripts/writing_grader.py --type full --output ./toefl-prep/writing/
@@ -112,15 +112,15 @@ python scripts/writing_grader.py --type email --output ./toefl-prep/writing/
 python scripts/writing_grader.py --type discussion --output ./toefl-prep/writing/
 ```
 
-**Claude 批改寫作時：**
-- 讀取 `references/scoring-rubrics.md` 的 Writing 段落
-- Email：檢查是否涵蓋所有要點 / 語氣 / 文法 / 拼字
-- Discussion：檢查觀點 / 論證 / 回應他人 / 文法
-- 使用標準回饋格式（列出具體錯誤 + 修正 + 模範回答）
+**AI 批改写作时：**
+- 读取 `references/scoring-rubrics.md` 的 Writing 段落
+- Email：检查是否涵盖所有要点 / 语气 / 文法 / 拼字
+- Discussion：检查观点 / 论证 / 回应他人 / 文法
+- 使用标准回馈格式（列出具体错误 + 修正 + 模范回答）
 
-### 🎧 聽力練習
-**觸發詞：** 「聽力練習」、「練聽力」、「listening practice」
-**動作：** 執行 `scripts/generate_listening.py` 產生音檔和練習題
+### 🎧 听力练习
+**触发词：** 「听力练习」、「练听力」、「listening practice」
+**动作：** 执行 `scripts/generate_listening.py` 产生音档和练习题
 
 ```bash
 python scripts/generate_listening.py --type all --output ./toefl-prep/listening/
@@ -129,69 +129,69 @@ python scripts/generate_listening.py --type academic --output ./toefl-prep/liste
 python scripts/generate_listening.py --type choose-response --output ./toefl-prep/listening/
 ```
 
-**依賴：** `pip install edge-tts`
+**依赖：** `pip install edge-tts`
 
-### 📚 單字 / Anki
-**觸發詞：** 「背單字」、「產生 Anki」、「vocabulary」、「單字卡」
-**動作：**
-1. 讀取 `references/vocabulary-core.md` 選擇本週單字
-2. 執行 `scripts/generate_anki.py` 產生 .apkg
+### 📚 单字 / Anki
+**触发词：** 「背单字」、「产生 Anki」、「vocabulary」、「单字卡」
+**动作：**
+1. 读取 `references/vocabulary-core.md` 选择本周单字
+2. 执行 `scripts/generate_anki.py` 产生 .apkg
 
-### 📖 推薦素材 / 該用什麼來練
-**觸發詞：** 「推薦素材」、「該看什麼」、「有什麼資源」、「練習素材」、「怎麼找聽力材料」
-**動作：** 讀取 `references/resources-guide.md`，根據使用者的程度和弱項推薦對應素材
+### 📖 推荐素材 / 该用什么来练
+**触发词：** 「推荐素材」、「该看什么」、「有什么资源」、「练习素材」、「怎么找听力材料」
+**动作：** 读取 `references/resources-guide.md`，根据使用者的程度和弱项推荐对应素材
 
 resources-guide.md 包含：
-- 官方 ETS 資源（模擬考、Interactive Sampler）
-- 模擬考平台比較（Magoosh、BestMyTest、TestSucceed 等）
-- 各科素材來源（按難度分級 Lv1–5）
-- Podcast 推薦（入門/中級/進階）
-- YouTube 頻道推薦
-- 開源工具鏈（edge-tts 語音選擇、語速調整指令）
-- 每週素材排程建議
-- 避免使用的過時資源清單
+- 官方 ETS 资源（模拟考、Interactive Sampler）
+- 模拟考平台比较（Magoosh、BestMyTest、TestSucceed 等）
+- 各科素材来源（按难度分级 Lv1–5）
+- Podcast 推荐（入门/中级/进阶）
+- YouTube 频道推荐
+- 开源工具链（edge-tts 语音选择、语速调整指令）
+- 每周素材排程建议
+- 避免使用的过时资源清单
 
 ```bash
 python scripts/generate_anki.py --output ./toefl-prep/vocabulary/anki-decks/ --week 1
 ```
 
-**依賴：** `pip install genanki`
+**依赖：** `pip install genanki`
 
-### 🧠 自適應調整 / 弱項分析
-**觸發詞：** 「弱項分析」、「調整計畫」、「重新平衡」、「難度調整」、「里程碑檢查」
-**動作：** 執行 `scripts/adaptive.py`
+### 🧠 自适应调整 / 弱项分析
+**触发词：** 「弱项分析」、「调整计划」、「重新平衡」、「难度调整」、「里程碑检查」
+**动作：** 执行 `scripts/adaptive.py`
 
 ```bash
-python scripts/adaptive.py --target ./toefl-prep/ --action analyze     # 完整分析報告
-python scripts/adaptive.py --target ./toefl-prep/ --action rebalance   # 重新分配時間
-python scripts/adaptive.py --target ./toefl-prep/ --action difficulty  # 建議難度等級
-python scripts/adaptive.py --target ./toefl-prep/ --action checkpoint  # 里程碑檢查
+python scripts/adaptive.py --target ./toefl-prep/ --action analyze     # 完整分析报告
+python scripts/adaptive.py --target ./toefl-prep/ --action rebalance   # 重新分配时间
+python scripts/adaptive.py --target ./toefl-prep/ --action difficulty  # 建议难度等级
+python scripts/adaptive.py --target ./toefl-prep/ --action checkpoint  # 里程碑检查
 ```
 
-**自適應引擎做什麼：**
-- 從 progress.json 和模擬考數據計算各科差距（gap = 目標分數 - 現有分數）
-- 差距越大的科目 → 分配更多每日練習時間（最高 45%，最低 10%）
-- 根據現有分數推薦題目難度等級（Lv1 基礎 ~ Lv5 高級）
-- 偵測分數下降趨勢 → 發出警告
-- 各科差距 > 1.5 分 → 判定嚴重不平衡，建議集中補強
-- 產生 adaptive.json 供其他模組讀取
-- 里程碑檢查（25%/50%/75%/100% 進度點）
+**自适应引擎做什么：**
+- 从 progress.json 和模拟考数据计算各科差距（gap = 目标分数 - 现有分数）
+- 差距越大的科目 → 分配更多每日练习时间（最高 45%，最低 10%）
+- 根据现有分数推荐题目难度等级（Lv1 基础 ~ Lv5 高级）
+- 侦测分数下降趋势 → 发出警告
+- 各科差距 > 1.5 分 → 判定严重不平衡，建议集中补强
+- 产生 adaptive.json 供其他模组读取
+- 里程碑检查（25%/50%/75%/100% 进度点）
 
 **daily.py 整合：** 
-daily.py 會自動讀取 adaptive.json（如存在），用自適應建議替換固定計畫。
+daily.py 会自动读取 adaptive.json（如存在），用自适应建议替换固定计划。
 
-**何時觸發 rebalance：**
-- 每次模擬考後自動建議
-- 使用者主動要求
-- 里程碑檢查未通過時
+**何时触发 rebalance：**
+- 每次模拟考后自动建议
+- 使用者主动要求
+- 里程碑检查未通过时
 
-### 📝 模擬考
-**觸發詞：** 「模擬考」、「mock test」、「做一次完整測驗」
-**動作：**
-1. 執行 `scripts/mock_test.py --action create` 建立考試資料夾
-2. 按科目順序引導考試（R → L → S → W）
-3. 各科目使用對應模組產生題目
-4. 完成後評分並更新 progress.json
+### 📝 模拟考
+**触发词：** 「模拟考」、「mock test」、「做一次完整测验」
+**动作：**
+1. 执行 `scripts/mock_test.py --action create` 建立考试资料夹
+2. 按科目顺序引导考试（R → L → S → W）
+3. 各科目使用对应模组产生题目
+4. 完成后评分并更新 progress.json
 
 ```bash
 python scripts/mock_test.py --target ./toefl-prep/ --action create
@@ -201,37 +201,37 @@ python scripts/mock_test.py --target ./toefl-prep/ --action history
 
 ---
 
-## 工具鏈
+## 工具链
 
-| 工具 | 用途 | 安裝 | 必要性 |
+| 工具 | 用途 | 安装 | 必要性 |
 |------|------|------|--------|
-| `edge-tts` | TTS 聽力素材 + 跟讀音檔 | `pip install edge-tts` | 聽力/口說必要 |
-| `genanki` | Anki 單字卡 .apkg | `pip install genanki` | 單字功能必要 |
-| `Kokoro TTS` | 離線高品質 TTS | `pip install kokoro` | 選用（替代 edge-tts） |
+| `edge-tts` | TTS 听力素材 + 跟读音档 | `pip install edge-tts` | 听力/口说必要 |
+| `genanki` | Anki 单字卡 .apkg | `pip install genanki` | 单字功能必要 |
+| `Kokoro TTS` | 离线高品质 TTS | `pip install kokoro` | 选用（替代 edge-tts） |
 
 ---
 
 ## 2026 新制速查
 
-需要詳細資訊時，讀取 `references/exam-format-2026.md`。
+需要详细资讯时，读取 `references/exam-format-2026.md`。
 
-**計分：** 1.0–6.0（CEFR 對齊），總分 = 四科平均
-**自適應：** R/L 的 Module 1 表現決定 Module 2 難度（Hard path 上限 6.0 / Easy path 上限 4.0）
+**计分：** 1.0–6.0（CEFR 对齐），总分 = 四科平均
+**自适应：** R/L 的 Module 1 表现决定 Module 2 难度（Hard path 上限 6.0 / Easy path 上限 4.0）
 
-| 科目 | 時間 | 題型 |
+| 科目 | 时间 | 题型 |
 |------|------|------|
 | Reading | 18–27 min | Complete Words / Daily Life / Academic Passage |
 | Listening | 18–27 min | Choose Response / Conversations / Announcements / Academic Talks |
-| Speaking | ~10 min | Listen & Repeat (7) + Interview (4)，全 AI 評分 |
+| Speaking | ~10 min | Listen & Repeat (7) + Interview (4)，全 AI 评分 |
 | Writing | ~23 min | Build a Sentence (10) + Email (1) + Discussion (1) |
 
 ---
 
-## Claude 行為準則
+## AI 行为准则
 
-1. **首次進入：** 檢查 toefl-prep/config.json 是否存在。不存在 → 跑 init.py。存在 → 跑 daily.py。
-2. **Progressive disclosure：** 不要一次讀取所有 reference 檔案。只在需要時才讀取對應段落。
-3. **語言：** 預設用繁體中文與使用者溝通，但所有 TOEFL 練習內容用英文。
-4. **批改時：** 一定要讀取 `references/scoring-rubrics.md` 再評分，確保標準一致。
-5. **鼓勵：** 保持正面態度，強調進步而非缺點。每次練習結束給出 1–2 個具體改進建議。
-6. **追蹤：** 每次練習後提醒使用者更新 progress.json（或自動幫他更新）。
+1. **首次进入：** 检查 toefl-prep/config.json 是否存在。不存在 → 跑 init.py。存在 → 跑 daily.py。
+2. **Progressive disclosure：** 不要一次读取所有 reference 档案。只在需要时才读取对应段落。
+3. **语言：** 预设用繁体中文与使用者沟通，但所有 TOEFL 练习内容用英文。
+4. **批改时：** 一定要读取 `references/scoring-rubrics.md` 再评分，确保标准一致。
+5. **鼓励：** 保持正面态度，强调进步而非缺点。每次练习结束给出 1–2 个具体改进建议。
+6. **追踪：** 每次练习后提醒使用者更新 progress.json（或自动帮他更新）。

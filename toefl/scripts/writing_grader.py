@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-TOEFL 備考系統 — 寫作批改模組 (writing_grader.py)
-產生寫作題目（Build a Sentence / Email / Academic Discussion），
-提供 Claude 批改框架和評分標準。
+TOEFL 备考系统 — 写作批改模组 (writing_grader.py)
+产生写作题目（Build a Sentence / Email / Academic Discussion），
+提供 AI 批改框架和评分标准。
 
 Usage:
     python writing_grader.py --type sentence --output ./writing/ --count 10
@@ -18,24 +18,24 @@ import random
 from datetime import datetime
 from pathlib import Path
 
-# ── Build a Sentence 題庫 ──────────────────────────────
+# ── Build a Sentence 题库 ──────────────────────────────
 
 BUILD_SENTENCES = [
-    {"words": ["she", "wanted", "to", "know", "which", "colleges", "I'm", "considering"], "extra": None, "answer": "She wanted to know which colleges I'm considering.", "grammar_point": "間接問句（wh- clause）"},
-    {"words": ["the", "tour", "guides", "who", "showed", "us", "around", "were", "fantastic"], "extra": "the old city", "answer": "The tour guides who showed us around the old city were fantastic.", "grammar_point": "關係子句（who）"},
-    {"words": ["have", "you", "decided", "where", "to", "go", "for", "vacation", "yet"], "extra": None, "answer": "Have you decided where to go for vacation yet?", "grammar_point": "疑問句 + 間接問句"},
-    {"words": ["the", "professor", "explained", "how", "the", "experiment", "should", "be", "conducted"], "extra": None, "answer": "The professor explained how the experiment should be conducted.", "grammar_point": "間接問句 + 被動語態"},
-    {"words": ["students", "are", "required", "to", "submit", "their", "assignments", "by", "Friday"], "extra": None, "answer": "Students are required to submit their assignments by Friday.", "grammar_point": "被動語態 + 不定詞"},
-    {"words": ["the", "building", "that", "was", "constructed", "in", "1920", "needs", "renovation"], "extra": None, "answer": "The building that was constructed in 1920 needs renovation.", "grammar_point": "關係子句 + 被動語態"},
-    {"words": ["I", "wonder", "whether", "the", "library", "is", "open", "on", "weekends"], "extra": None, "answer": "I wonder whether the library is open on weekends.", "grammar_point": "間接問句（whether）"},
-    {"words": ["the", "research", "findings", "suggest", "that", "sleep", "affects", "memory"], "extra": "significantly", "answer": "The research findings suggest that sleep significantly affects memory.", "grammar_point": "名詞子句 + 副詞位置"},
-    {"words": ["neither", "the", "students", "nor", "the", "teacher", "was", "satisfied", "with", "the", "results"], "extra": None, "answer": "Neither the students nor the teacher was satisfied with the results.", "grammar_point": "neither...nor 主詞動詞一致"},
-    {"words": ["it", "is", "essential", "that", "every", "participant", "sign", "the", "consent", "form"], "extra": None, "answer": "It is essential that every participant sign the consent form.", "grammar_point": "假設語氣（subjunctive）"},
-    {"words": ["the", "more", "you", "practice", "the", "better", "your", "pronunciation", "will", "become"], "extra": None, "answer": "The more you practice, the better your pronunciation will become.", "grammar_point": "the more...the more 比較句型"},
-    {"words": ["had", "I", "known", "about", "the", "deadline", "I", "would", "have", "submitted", "earlier"], "extra": None, "answer": "Had I known about the deadline, I would have submitted earlier.", "grammar_point": "倒裝假設語氣（第三條件句）"},
+    {"words": ["she", "wanted", "to", "know", "which", "colleges", "I'm", "considering"], "extra": None, "answer": "She wanted to know which colleges I'm considering.", "grammar_point": "间接问句（wh- clause）"},
+    {"words": ["the", "tour", "guides", "who", "showed", "us", "around", "were", "fantastic"], "extra": "the old city", "answer": "The tour guides who showed us around the old city were fantastic.", "grammar_point": "关系子句（who）"},
+    {"words": ["have", "you", "decided", "where", "to", "go", "for", "vacation", "yet"], "extra": None, "answer": "Have you decided where to go for vacation yet?", "grammar_point": "疑问句 + 间接问句"},
+    {"words": ["the", "professor", "explained", "how", "the", "experiment", "should", "be", "conducted"], "extra": None, "answer": "The professor explained how the experiment should be conducted.", "grammar_point": "间接问句 + 被动语态"},
+    {"words": ["students", "are", "required", "to", "submit", "their", "assignments", "by", "Friday"], "extra": None, "answer": "Students are required to submit their assignments by Friday.", "grammar_point": "被动语态 + 不定词"},
+    {"words": ["the", "building", "that", "was", "constructed", "in", "1920", "needs", "renovation"], "extra": None, "answer": "The building that was constructed in 1920 needs renovation.", "grammar_point": "关系子句 + 被动语态"},
+    {"words": ["I", "wonder", "whether", "the", "library", "is", "open", "on", "weekends"], "extra": None, "answer": "I wonder whether the library is open on weekends.", "grammar_point": "间接问句（whether）"},
+    {"words": ["the", "research", "findings", "suggest", "that", "sleep", "affects", "memory"], "extra": "significantly", "answer": "The research findings suggest that sleep significantly affects memory.", "grammar_point": "名词子句 + 副词位置"},
+    {"words": ["neither", "the", "students", "nor", "the", "teacher", "was", "satisfied", "with", "the", "results"], "extra": None, "answer": "Neither the students nor the teacher was satisfied with the results.", "grammar_point": "neither...nor 主词动词一致"},
+    {"words": ["it", "is", "essential", "that", "every", "participant", "sign", "the", "consent", "form"], "extra": None, "answer": "It is essential that every participant sign the consent form.", "grammar_point": "假设语气（subjunctive）"},
+    {"words": ["the", "more", "you", "practice", "the", "better", "your", "pronunciation", "will", "become"], "extra": None, "answer": "The more you practice, the better your pronunciation will become.", "grammar_point": "the more...the more 比较句型"},
+    {"words": ["had", "I", "known", "about", "the", "deadline", "I", "would", "have", "submitted", "earlier"], "extra": None, "answer": "Had I known about the deadline, I would have submitted earlier.", "grammar_point": "倒装假设语气（第三条件句）"},
 ]
 
-# ── Email 題庫 ──────────────────────────────────────
+# ── Email 题库 ──────────────────────────────────────
 
 EMAIL_PROMPTS = [
     {
@@ -90,7 +90,7 @@ EMAIL_PROMPTS = [
     },
 ]
 
-# ── Academic Discussion 題庫 ──────────────────────────
+# ── Academic Discussion 题库 ──────────────────────────
 
 DISCUSSION_PROMPTS = [
     {
@@ -127,9 +127,9 @@ def generate_sentence_exercises(output_dir: str, count: int = 10):
 
     selected = random.sample(BUILD_SENTENCES, min(count, len(BUILD_SENTENCES)))
 
-    md = "# Build a Sentence 練習\n\n"
-    md += "**規則：** 將打亂的單字排列成正確的句子。可能有一個多餘的干擾詞。\n"
-    md += "**計分：** 全對 1 分，有任何錯誤 0 分。\n\n"
+    md = "# Build a Sentence 练习\n\n"
+    md += "**规则：** 将打乱的单字排列成正确的句子。可能有一个多余的干扰词。\n"
+    md += "**计分：** 全对 1 分，有任何错误 0 分。\n\n"
 
     for i, s in enumerate(selected, 1):
         words = s["words"][:]
@@ -137,21 +137,21 @@ def generate_sentence_exercises(output_dir: str, count: int = 10):
             words.append(s["extra"])
         random.shuffle(words)
 
-        md += f"### 第 {i} 題\n\n"
-        md += f"**單字：** {' / '.join(words)}\n\n"
+        md += f"### 第 {i} 题\n\n"
+        md += f"**单字：** {' / '.join(words)}\n\n"
         md += f"**我的答案：** ________________________________\n\n"
-        md += f"<details><summary>正確答案</summary>\n\n"
+        md += f"<details><summary>正确答案</summary>\n\n"
         md += f"{s['answer']}\n\n"
-        md += f"**文法考點：** {s['grammar_point']}\n\n</details>\n\n---\n\n"
+        md += f"**文法考点：** {s['grammar_point']}\n\n</details>\n\n---\n\n"
 
     # Score summary
-    md += "## 成績\n\n"
-    md += f"答對：____ / {len(selected)}\n\n"
+    md += "## 成绩\n\n"
+    md += f"答对：____ / {len(selected)}\n\n"
 
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"✅ Build a Sentence 練習已產生：{exercise_dir}（{len(selected)} 題）")
+    print(f"✅ Build a Sentence 练习已产生：{exercise_dir}（{len(selected)} 题）")
     return exercise_dir
 
 
@@ -165,16 +165,16 @@ def generate_email_exercise(output_dir: str, prompt_index: int = None):
     else:
         prompt = random.choice(EMAIL_PROMPTS)
 
-    md = "# Write an Email 練習\n\n"
-    md += f"**時間限制：** 7 分鐘\n"
-    md += f"**目標字數：** 100–180 字\n\n"
+    md = "# Write an Email 练习\n\n"
+    md += f"**时间限制：** 7 分钟\n"
+    md += f"**目标字数：** 100–180 字\n\n"
     md += "---\n\n"
     md += f"## 情境\n\n{prompt['scenario']}\n\n"
     md += f"**收件人：** {prompt['recipient']}\n\n"
-    md += "**請在 email 中涵蓋以下要點：**\n\n"
+    md += "**请在 email 中涵盖以下要点：**\n\n"
     for b in prompt["bullets"]:
         md += f"- {b}\n"
-    md += f"\n**建議語氣：** {prompt['tone']}\n\n"
+    md += f"\n**建议语气：** {prompt['tone']}\n\n"
     md += "---\n\n"
     md += "## 我的回答\n\n"
     md += "To: _______________\n\n"
@@ -183,12 +183,12 @@ def generate_email_exercise(output_dir: str, prompt_index: int = None):
     md += "\n\n\n\n"
     md += "Best regards,\n[Your Name]\n\n"
     md += "---\n\n"
-    md += "## 批改結果\n\n（完成後請 Claude 批改：「幫我批改這篇 email」）\n"
+    md += "## 批改结果\n\n（完成后请 AI 批改：「帮我批改这篇 email」）\n"
 
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"✅ Email 練習已產生：{exercise_dir}")
+    print(f"✅ Email 练习已产生：{exercise_dir}")
     return exercise_dir
 
 
@@ -202,9 +202,9 @@ def generate_discussion_exercise(output_dir: str, prompt_index: int = None):
     else:
         prompt = random.choice(DISCUSSION_PROMPTS)
 
-    md = "# Write for an Academic Discussion 練習\n\n"
-    md += f"**時間限制：** 10 分鐘\n"
-    md += f"**目標字數：** 120+ 字\n\n"
+    md = "# Write for an Academic Discussion 练习\n\n"
+    md += f"**时间限制：** 10 分钟\n"
+    md += f"**目标字数：** 120+ 字\n\n"
     md += "---\n\n"
     md += f"## {prompt['professor']}'s Question\n\n"
     md += f"{prompt['topic']}\n\n"
@@ -215,32 +215,32 @@ def generate_discussion_exercise(output_dir: str, prompt_index: int = None):
     md += f"{prompt['student_b']['position']}\n\n"
     md += "---\n\n"
     md += "## 我的回答\n\n"
-    md += "（請加入自己的觀點，可以同意或反對任一學生，但要提出新的論點）\n\n\n\n\n\n"
+    md += "（请加入自己的观点，可以同意或反对任一学生，但要提出新的论点）\n\n\n\n\n\n"
     md += "---\n\n"
-    md += "## 批改結果\n\n（完成後請 Claude 批改：「幫我批改這篇 discussion」）\n"
+    md += "## 批改结果\n\n（完成后请 AI 批改：「帮我批改这篇 discussion」）\n"
 
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"✅ Academic Discussion 練習已產生：{exercise_dir}")
+    print(f"✅ Academic Discussion 练习已产生：{exercise_dir}")
     return exercise_dir
 
 
 def generate_full_writing(output_dir: str):
     """Generate a complete writing practice set."""
-    print("✍️ 產生完整寫作練習（模擬真實考試）\n")
+    print("✍️ 产生完整写作练习（模拟真实考试）\n")
     s = generate_sentence_exercises(output_dir, 10)
     print()
     e = generate_email_exercise(output_dir)
     print()
     d = generate_discussion_exercise(output_dir)
-    print(f"\n📝 完整寫作練習已產生！")
-    print(f"   順序：Build a Sentence → Email → Discussion")
+    print(f"\n📝 完整写作练习已产生！")
+    print(f"   顺序：Build a Sentence → Email → Discussion")
     return s, e, d
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 寫作批改模組")
+    parser = argparse.ArgumentParser(description="TOEFL 写作批改模组")
     parser.add_argument("--type", choices=["sentence", "email", "discussion", "full"], default="full")
     parser.add_argument("--output", default="./writing/")
     parser.add_argument("--count", type=int, default=10, help="Number of sentence exercises")

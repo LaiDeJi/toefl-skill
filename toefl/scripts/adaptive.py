@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-TOEFL 備考系統 — 自適應引擎 (adaptive.py)
+TOEFL 备考系统 — 自适应引擎 (adaptive.py)
 
-根據 progress.json 中的表現數據，動態調整：
-1. 每日時間分配（弱科多練、強科維持）
-2. 題目難度等級
-3. 本週重點科目
-4. 里程碑檢查與計畫修正建議
-5. 單字複習排程（遺忘曲線加權）
+根据 progress.json 中的表现数据，动态调整：
+1. 每日时间分配（弱科多练、强科维持）
+2. 题目难度等级
+3. 本周重点科目
+4. 里程碑检查与计划修正建议
+5. 单字复习排程（遗忘曲线加权）
 
 Usage:
-    python adaptive.py --target ./toefl-prep/ --action analyze     # 分析現況，輸出調整建議
-    python adaptive.py --target ./toefl-prep/ --action rebalance   # 重新分配時間並更新每日計畫
-    python adaptive.py --target ./toefl-prep/ --action difficulty  # 輸出各科建議難度等級
-    python adaptive.py --target ./toefl-prep/ --action checkpoint  # 里程碑檢查
+    python adaptive.py --target ./toefl-prep/ --action analyze     # 分析现况，输出调整建议
+    python adaptive.py --target ./toefl-prep/ --action rebalance   # 重新分配时间并更新每日计划
+    python adaptive.py --target ./toefl-prep/ --action difficulty  # 输出各科建议难度等级
+    python adaptive.py --target ./toefl-prep/ --action checkpoint  # 里程碑检查
 """
 
 import argparse
@@ -29,56 +29,56 @@ from collections import defaultdict
 
 SECTIONS = ["reading", "listening", "speaking", "writing"]
 
-# 每科最低時間佔比（不會低於此比例）
+# 每科最低时间占比（不会低于此比例）
 MIN_TIME_RATIO = 0.10  # 10%
-# 弱科加權上限
+# 弱科加权上限
 MAX_TIME_RATIO = 0.45  # 45%
 
-# 難度等級定義
+# 难度等级定义
 DIFFICULTY_LEVELS = {
-    1: {"label": "基礎", "description": "短句、常見詞、慢速", "target_score_range": (1.0, 2.5)},
-    2: {"label": "初中級", "description": "中等句長、學術基礎詞", "target_score_range": (2.5, 3.5)},
-    3: {"label": "中級", "description": "複雜句、學術進階詞、正常語速", "target_score_range": (3.5, 4.5)},
-    4: {"label": "中高級", "description": "長複雜句、低頻詞、快語速", "target_score_range": (4.5, 5.0)},
-    5: {"label": "高級", "description": "接近真實考試最高難度", "target_score_range": (5.0, 6.0)},
+    1: {"label": "基础", "description": "短句、常见词、慢速", "target_score_range": (1.0, 2.5)},
+    2: {"label": "初中级", "description": "中等句长、学术基础词", "target_score_range": (2.5, 3.5)},
+    3: {"label": "中级", "description": "复杂句、学术进阶词、正常语速", "target_score_range": (3.5, 4.5)},
+    4: {"label": "中高级", "description": "长复杂句、低频词、快语速", "target_score_range": (4.5, 5.0)},
+    5: {"label": "高级", "description": "接近真实考试最高难度", "target_score_range": (5.0, 6.0)},
 }
 
-# 里程碑定義（按週數比例）
+# 里程碑定义（按周数比例）
 MILESTONES = {
-    0.25: {  # 25% 進度（第3週）
-        "name": "基礎檢查點",
+    0.25: {  # 25% 进度（第3周）
+        "name": "基础检查点",
         "expected": {
             "diagnostic_completed": True,
             "vocab_learned": 60,
             "mock_tests": 1,
         },
-        "checks": ["是否完成診斷測驗", "是否累積 60+ 單字", "是否完成第一次模擬考"],
+        "checks": ["是否完成诊断测验", "是否累积 60+ 单字", "是否完成第一次模拟考"],
     },
-    0.50: {  # 50% 進度（第6週）
-        "name": "中期檢查點",
+    0.50: {  # 50% 进度（第6周）
+        "name": "中期检查点",
         "expected": {
             "vocab_learned": 150,
             "mock_tests": 2,
             "min_score_improvement": 0.5,
         },
-        "checks": ["模擬考分數是否提升 ≥ 0.5", "弱項是否有改善", "是否維持每日練習"],
+        "checks": ["模拟考分数是否提升 ≥ 0.5", "弱项是否有改善", "是否维持每日练习"],
     },
-    0.75: {  # 75% 進度（第9週）
-        "name": "衝刺前檢查點",
+    0.75: {  # 75% 进度（第9周）
+        "name": "冲刺前检查点",
         "expected": {
             "vocab_learned": 250,
             "mock_tests": 3,
             "target_gap": 0.5,
         },
-        "checks": ["模擬考分數是否在目標 -0.5 以內", "各科是否平衡", "是否需要延長計畫"],
+        "checks": ["模拟考分数是否在目标 -0.5 以内", "各科是否平衡", "是否需要延长计划"],
     },
-    1.0: {  # 100% 進度（最後一週）
-        "name": "考前最終檢查",
+    1.0: {  # 100% 进度（最后一周）
+        "name": "考前最终检查",
         "expected": {
             "mock_tests": 4,
             "target_reached": True,
         },
-        "checks": ["是否達到目標分數", "是否有信心穩定發揮", "考試流程是否熟悉"],
+        "checks": ["是否达到目标分数", "是否有信心稳定发挥", "考试流程是否熟悉"],
     },
 }
 
@@ -221,15 +221,15 @@ def analyze(target: str):
     weights = compute_weakness_weights(scores, target_score)
     time_alloc = compute_daily_plan(weights, daily_minutes)
 
-    print("\n🧠 自適應分析報告")
+    print("\n🧠 自适应分析报告")
     print("=" * 55)
-    print(f"🎯 目標：{target_score}  |  📅 進度：第 {current_week}/{total_weeks} 週 ({current_week/total_weeks*100:.0f}%)")
+    print(f"🎯 目标：{target_score}  |  📅 进度：第 {current_week}/{total_weeks} 周 ({current_week/total_weeks*100:.0f}%)")
     print()
 
     # Section analysis
-    print("📊 各科現況")
+    print("📊 各科现况")
     print("-" * 55)
-    print(f"{'科目':<12} {'分數':<8} {'差距':<8} {'趨勢':<8} {'難度':<10} {'時間分配'}")
+    print(f"{'科目':<12} {'分数':<8} {'差距':<8} {'趋势':<8} {'难度':<10} {'时间分配'}")
     for sec in SECTIONS:
         s = scores.get(sec)
         s_str = f"{s:.1f}" if s else "—"
@@ -246,11 +246,11 @@ def analyze(target: str):
     print()
 
     # Recommendations
-    print("💡 調整建議")
+    print("💡 调整建议")
     print("-" * 55)
 
     if not scores:
-        print("  ⚠️ 尚無分數數據。請先完成診斷測驗或模擬考。")
+        print("  ⚠️ 尚无分数数据。请先完成诊断测验或模拟考。")
         return
 
     # Find weakest
@@ -260,31 +260,31 @@ def analyze(target: str):
     gap_best = target_score - scores[strongest]
 
     if gap_worst > 1.5:
-        print(f"  🔴 {weakest.capitalize()} 落後目標 {gap_worst:.1f} 分，建議每天至少 {time_alloc[weakest]} 分鐘專項練習")
+        print(f"  🔴 {weakest.capitalize()} 落后目标 {gap_worst:.1f} 分，建议每天至少 {time_alloc[weakest]} 分钟专项练习")
 
     if gap_worst > 0.5 and gap_best <= 0:
-        print(f"  🟡 {strongest.capitalize()} 已達標，可以減少時間，將資源移到 {weakest.capitalize()}")
+        print(f"  🟡 {strongest.capitalize()} 已达标，可以减少时间，将资源移到 {weakest.capitalize()}")
 
     # Trend warnings
     for sec in SECTIONS:
         if trends.get(sec, {}).get("direction") == "declining":
-            print(f"  ⚠️ {sec.capitalize()} 分數下降中！建議本週額外加練")
+            print(f"  ⚠️ {sec.capitalize()} 分数下降中！建议本周额外加练")
 
     # Balance check
     score_values = list(scores.values())
     if score_values:
         score_range = max(score_values) - min(score_values)
         if score_range > 1.5:
-            print(f"  ⚠️ 各科差距 {score_range:.1f} 分，嚴重不平衡。集中補弱科。")
+            print(f"  ⚠️ 各科差距 {score_range:.1f} 分，严重不平衡。集中补弱科。")
         elif score_range < 0.5:
-            print(f"  ✅ 各科平衡（差距 {score_range:.1f}），可以均衡練習。")
+            print(f"  ✅ 各科平衡（差距 {score_range:.1f}），可以均衡练习。")
 
     # Pace check
     progress_ratio = current_week / total_weeks
     avg_score = sum(score_values) / len(score_values) if score_values else 0
     expected_progress = target_score * (0.6 + 0.4 * progress_ratio)  # expect 60% at start, 100% at end
     if avg_score < expected_progress * 0.8:
-        print(f"  🏃 進度偏慢。考慮增加每日練習時間或延長計畫。")
+        print(f"  🏃 进度偏慢。考虑增加每日练习时间或延长计划。")
 
     # Output adaptive config
     adaptive_config = {
@@ -298,7 +298,7 @@ def analyze(target: str):
     }
     adaptive_path = os.path.join(target, "adaptive.json")
     save_json(adaptive_path, adaptive_config)
-    print(f"\n📁 自適應設定已儲存：{adaptive_path}")
+    print(f"\n📁 自适应设定已储存：{adaptive_path}")
 
     return adaptive_config
 
@@ -319,27 +319,27 @@ def rebalance(target: str):
     time_alloc = compute_daily_plan(weights, daily_minutes)
     
     if not scores:
-        print("⚠️ 尚無分數數據，無法重新平衡。請先完成模擬考。")
+        print("⚠️ 尚无分数数据，无法重新平衡。请先完成模拟考。")
         return
 
     # Sort sections by priority (weakest first)
     priority_order = sorted(SECTIONS, key=lambda s: scores.get(s, 0))
 
-    print("\n🔄 重新平衡每日計畫")
+    print("\n🔄 重新平衡每日计划")
     print("=" * 50)
-    print(f"基於最新數據，調整第 {current_week} 週 Day {current_day} 起的計畫\n")
+    print(f"基于最新数据，调整第 {current_week} 周 Day {current_day} 起的计划\n")
 
-    print("📊 新的時間分配：")
+    print("📊 新的时间分配：")
     for sec in priority_order:
         mins = time_alloc[sec]
         pct = weights[sec] * 100
         bar_len = int(pct / 5)
         bar = "█" * bar_len + "░" * (20 - bar_len)
         score_str = f"{scores.get(sec, 0):.1f}" if scores.get(sec) else "?"
-        print(f"  {sec.capitalize():<12} [{bar}] {mins:>2}min ({pct:.0f}%)  現分：{score_str}")
+        print(f"  {sec.capitalize():<12} [{bar}] {mins:>2}min ({pct:.0f}%)  现分：{score_str}")
 
     # Generate adjusted daily template
-    print("\n📋 調整後的每日模板：")
+    print("\n📋 调整后的每日模板：")
     print("-" * 50)
     
     # Vocabulary is always 5 min
@@ -353,13 +353,13 @@ def rebalance(target: str):
     primary_time = max(10, round(remaining * weights[primary] / (weights[primary] + weights[secondary] + 0.001) * 1.2))
     secondary_time = remaining - primary_time
 
-    print(f"  📚 單字複習：{vocab_time} 分鐘")
-    print(f"  🔴 主練（{primary.capitalize()}）：{primary_time} 分鐘")
-    print(f"  🟡 副練（{secondary.capitalize()}）：{secondary_time} 分鐘")
-    print(f"  ─── 合計：{daily_minutes} 分鐘")
+    print(f"  📚 单字复习：{vocab_time} 分钟")
+    print(f"  🔴 主练（{primary.capitalize()}）：{primary_time} 分钟")
+    print(f"  🟡 副练（{secondary.capitalize()}）：{secondary_time} 分钟")
+    print(f"  ─── 合计：{daily_minutes} 分钟")
 
     # Difficulty recommendations
-    print("\n📏 建議題目難度：")
+    print("\n📏 建议题目难度：")
     for sec in SECTIONS:
         level = compute_difficulty_level(scores.get(sec))
         info = DIFFICULTY_LEVELS[level]
@@ -385,7 +385,7 @@ def rebalance(target: str):
     config["last_rebalance"] = datetime.now().isoformat()
     save_json(os.path.join(target, "config.json"), config)
 
-    print(f"\n✅ 計畫已重新平衡。下次 daily.py 會使用新設定。")
+    print(f"\n✅ 计划已重新平衡。下次 daily.py 会使用新设定。")
 
 
 def show_difficulty(target: str):
@@ -393,46 +393,46 @@ def show_difficulty(target: str):
     progress = load_json(os.path.join(target, "progress.json"))
     scores = compute_section_scores(progress)
 
-    print("\n📏 各科建議難度")
+    print("\n📏 各科建议难度")
     print("=" * 55)
     for sec in SECTIONS:
         s = scores.get(sec)
         level = compute_difficulty_level(s)
         info = DIFFICULTY_LEVELS[level]
         s_str = f"{s:.1f}" if s else "未知"
-        print(f"\n  {sec.capitalize()} （現分：{s_str}）")
+        print(f"\n  {sec.capitalize()} （现分：{s_str}）")
         print(f"    → Lv{level} {info['label']}")
         print(f"    {info['description']}")
         
         # Specific tips per section per level
         if sec == "reading":
             if level <= 2:
-                print(f"    💡 先從 Daily Life 短文開始，再練 Complete the Words")
+                print(f"    💡 先从 Daily Life 短文开始，再练 Complete the Words")
             elif level <= 3:
-                print(f"    💡 加入 Academic Passage，練習推論題")
+                print(f"    💡 加入 Academic Passage，练习推论题")
             else:
-                print(f"    💡 限時練習，模擬 Module 1 壓力")
+                print(f"    💡 限时练习，模拟 Module 1 压力")
         elif sec == "listening":
             if level <= 2:
-                print(f"    💡 先聽慢速（--rate=-20%），逐漸加速")
+                print(f"    💡 先听慢速（--rate=-20%），逐渐加速")
             elif level <= 3:
-                print(f"    💡 正常語速，練習筆記技巧")
+                print(f"    💡 正常语速，练习笔记技巧")
             else:
-                print(f"    💡 Academic Talks + 推論題，只聽一次")
+                print(f"    💡 Academic Talks + 推论题，只听一次")
         elif sec == "speaking":
             if level <= 2:
-                print(f"    💡 Repeat 練短句（5 詞以下），Interview 先打字再口說")
+                print(f"    💡 Repeat 练短句（5 词以下），Interview 先打字再口说")
             elif level <= 3:
-                print(f"    💡 Repeat 練中長句，Interview 計時 45 秒")
+                print(f"    💡 Repeat 练中长句，Interview 计时 45 秒")
             else:
-                print(f"    💡 全速跟讀，Interview 不打草稿直接說")
+                print(f"    💡 全速跟读，Interview 不打草稿直接说")
         elif sec == "writing":
             if level <= 2:
-                print(f"    💡 Build a Sentence 先練簡單句型")
+                print(f"    💡 Build a Sentence 先练简单句型")
             elif level <= 3:
-                print(f"    💡 Email 計時 7 分鐘，確保涵蓋所有要點")
+                print(f"    💡 Email 计时 7 分钟，确保涵盖所有要点")
             else:
-                print(f"    💡 計時完成所有題型，追求零文法錯誤")
+                print(f"    💡 计时完成所有题型，追求零文法错误")
 
 
 def checkpoint(target: str):
@@ -449,9 +449,9 @@ def checkpoint(target: str):
     mocks = progress.get("mock_tests", [])
     vocab = progress.get("vocabulary", {})
 
-    print("\n🏁 里程碑檢查")
+    print("\n🏁 里程碑检查")
     print("=" * 55)
-    print(f"📅 進度：第 {current_week}/{total_weeks} 週（{progress_ratio*100:.0f}%）")
+    print(f"📅 进度：第 {current_week}/{total_weeks} 周（{progress_ratio*100:.0f}%）")
     print()
 
     # Find applicable milestone
@@ -461,11 +461,11 @@ def checkpoint(target: str):
             applicable = (threshold, milestone)
 
     if not applicable:
-        print("  目前尚未到達任何里程碑。繼續加油！")
+        print("  目前尚未到达任何里程碑。继续加油！")
         return
 
     threshold, milestone = applicable
-    print(f"📌 {milestone['name']}（{threshold*100:.0f}% 進度點）")
+    print(f"📌 {milestone['name']}（{threshold*100:.0f}% 进度点）")
     print()
 
     passed = 0
@@ -473,14 +473,14 @@ def checkpoint(target: str):
 
     for check_desc in milestone["checks"]:
         # Evaluate each check
-        if "診斷測驗" in check_desc:
+        if "诊断测验" in check_desc:
             ok = config.get("diagnostic_completed", False)
-        elif "單字" in check_desc:
+        elif "单字" in check_desc:
             expected_vocab = milestone["expected"].get("vocab_learned", 0)
             actual_vocab = vocab.get("total_learned", 0)
             ok = actual_vocab >= expected_vocab
             check_desc += f"（{actual_vocab}/{expected_vocab}）"
-        elif "模擬考" in check_desc:
+        elif "模拟考" in check_desc:
             expected_mocks = milestone["expected"].get("mock_tests", 0)
             ok = len(mocks) >= expected_mocks
             check_desc += f"（{len(mocks)}/{expected_mocks}）"
@@ -492,7 +492,7 @@ def checkpoint(target: str):
                 check_desc += f"（{improvement:+.1f}）"
             else:
                 ok = False
-        elif "目標" in check_desc and "0.5" in check_desc:
+        elif "目标" in check_desc and "0.5" in check_desc:
             if scores:
                 avg = sum(scores.values()) / len(scores)
                 gap = target_score - avg
@@ -500,7 +500,7 @@ def checkpoint(target: str):
                 check_desc += f"（差距 {gap:.1f}）"
             else:
                 ok = False
-        elif "達到目標" in check_desc:
+        elif "达到目标" in check_desc:
             if scores:
                 avg = sum(scores.values()) / len(scores)
                 ok = avg >= target_score
@@ -515,26 +515,26 @@ def checkpoint(target: str):
         elif ok is False:
             print(f"  ❌ {check_desc}")
         else:
-            print(f"  ❓ {check_desc}（需手動確認）")
+            print(f"  ❓ {check_desc}（需手动确认）")
 
-    print(f"\n  通過：{passed}/{total}")
+    print(f"\n  通过：{passed}/{total}")
 
     if passed < total:
-        print("\n  💡 建議：")
+        print("\n  💡 建议：")
         if not config.get("diagnostic_completed"):
-            print("    → 儘快完成診斷測驗")
+            print("    → 尽快完成诊断测验")
         if len(mocks) < milestone["expected"].get("mock_tests", 0):
-            print("    → 安排一次模擬考")
+            print("    → 安排一次模拟考")
         if scores:
             avg = sum(scores.values()) / len(scores)
             if target_score - avg > 1.0:
-                print("    → 考慮增加每日練習時間或延長計畫週數")
+                print("    → 考虑增加每日练习时间或延长计划周数")
     else:
-        print("\n  🎉 所有里程碑都通過了！進度良好！")
+        print("\n  🎉 所有里程碑都通过了！进度良好！")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 自適應引擎")
+    parser = argparse.ArgumentParser(description="TOEFL 自适应引擎")
     parser.add_argument("--target", default="./toefl-prep/")
     parser.add_argument("--action", choices=["analyze", "rebalance", "difficulty", "checkpoint"], default="analyze")
     args = parser.parse_args()

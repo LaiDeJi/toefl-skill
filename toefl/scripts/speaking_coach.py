@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-TOEFL 備考系統 — 口說教練模組 (speaking_coach.py)
-產生口說題目、Listen & Repeat 跟讀句、Interview 練習題，
-並提供 Claude 評估框架。
+TOEFL 备考系统 — 口说教练模组 (speaking_coach.py)
+产生口说题目、Listen & Repeat 跟读句、Interview 练习题，
+并提供 AI 评估框架。
 
 Usage:
     python speaking_coach.py --type repeat --output ./speaking/ --count 7
@@ -23,7 +23,7 @@ import random
 from datetime import datetime
 from pathlib import Path
 
-# ── Listen & Repeat 句庫 ──────────────────────────────────
+# ── Listen & Repeat 句库 ──────────────────────────────────
 
 REPEAT_SENTENCE_BANKS = {
     "campus_tour": {
@@ -80,7 +80,7 @@ REPEAT_SENTENCE_BANKS = {
     },
 }
 
-# ── Interview 題庫 ──────────────────────────────────────
+# ── Interview 题库 ──────────────────────────────────────
 
 INTERVIEW_TOPICS = {
     "daily_life": {
@@ -135,60 +135,60 @@ INTERVIEW_TOPICS = {
     },
 }
 
-# ── Evaluation templates for Claude ──────────────────────
+# ── Evaluation templates for AI ──────────────────────
 
-REPEAT_EVAL_TEMPLATE = """## Listen & Repeat 評估
+REPEAT_EVAL_TEMPLATE = """## Listen & Repeat 评估
 
 **原句：** {original}
-**學生回答：** {student_answer}
+**学生回答：** {student_answer}
 
-### 評分 (0–5)
+### 评分 (0–5)
 
-| 維度 | 分數 | 說明 |
+| 维度 | 分数 | 说明 |
 |------|------|------|
-| Repeat Accuracy | /5 | 內容詞完整度、順序正確性 |
-| Fluency | /5 | 節奏穩定、無明顯停頓 |
-| Intelligibility | /5 | 發音清晰度 |
+| Repeat Accuracy | /5 | 内容词完整度、顺序正确性 |
+| Fluency | /5 | 节奏稳定、无明显停顿 |
+| Intelligibility | /5 | 发音清晰度 |
 
-**總分：** /5
+**总分：** /5
 
 ### 分析
-- 遺漏的詞：
-- 替換的詞：
-- 發音需注意：
+- 遗漏的词：
+- 替换的词：
+- 发音需注意：
 
-### 改進建議
+### 改进建议
 1.
 2.
 """
 
-INTERVIEW_EVAL_TEMPLATE = """## Interview 回答評估
+INTERVIEW_EVAL_TEMPLATE = """## Interview 回答评估
 
-**題目：** {question}
-**學生回答：** {student_answer}
-**字數：** {word_count} 字（目標 100-120 字 ≈ 45 秒）
+**题目：** {question}
+**学生回答：** {student_answer}
+**字数：** {word_count} 字（目标 100-120 字 ≈ 45 秒）
 
-### 評分 (0–5)
+### 评分 (0–5)
 
-| 維度 | 分數 | 說明 |
+| 维度 | 分数 | 说明 |
 |------|------|------|
-| Fluency | /5 | 語速自然、無明顯停頓 |
-| Intelligibility | /5 | 發音清晰 |
-| Language Use | /5 | 文法準確、詞彙多樣 |
-| Organization | /5 | 邏輯清晰、結構完整 |
+| Fluency | /5 | 语速自然、无明显停顿 |
+| Intelligibility | /5 | 发音清晰 |
+| Language Use | /5 | 文法准确、词汇多样 |
+| Organization | /5 | 逻辑清晰、结构完整 |
 
-**總分：** /5
+**总分：** /5
 
-### 優點
+### 优点
 
-### 需改進
+### 需改进
 
-### 文法錯誤
-| 原文 | 修正 | 說明 |
+### 文法错误
+| 原文 | 修正 | 说明 |
 |------|------|------|
 
-### 模範回答參考
-（提供一個 5 分級別的範例回答）
+### 模范回答参考
+（提供一个 5 分级别的范例回答）
 """
 
 
@@ -206,22 +206,22 @@ def generate_repeat_set(output_dir: str, bank_key: str = None, count: int = 7):
     sentences = bank["sentences"][:count]
 
     # Create exercise markdown
-    md = f"# Listen & Repeat 練習\n\n"
+    md = f"# Listen & Repeat 练习\n\n"
     md += f"**情境：** {bank['context']}\n"
-    md += f"**圖片提示：** {bank['image_hint']}\n\n"
-    md += "## 練習方式\n\n"
-    md += "1. 聽音檔（或請 Claude 唸出句子）\n"
-    md += "2. 聽完後立刻複述\n"
-    md += "3. 錄音或打字記錄你的回答\n"
-    md += "4. 請 Claude 評估\n\n"
+    md += f"**图片提示：** {bank['image_hint']}\n\n"
+    md += "## 练习方式\n\n"
+    md += "1. 听音档（或请 AI 念出句子）\n"
+    md += "2. 听完后立刻复述\n"
+    md += "3. 录音或打字记录你的回答\n"
+    md += "4. 请 AI 评估\n\n"
     md += "## 句子\n\n"
 
     for i, s in enumerate(sentences, 1):
         stars = "⭐" * s["difficulty"]
         md += f"### 第 {i} 句 {stars}（{s['seconds']}秒）\n\n"
-        md += f"> 🔊 （聽完後在下方記錄你的回答）\n\n"
+        md += f"> 🔊 （听完后在下方记录你的回答）\n\n"
         md += f"我的回答：________________\n\n"
-        md += f"<details><summary>原句（作答後再看）</summary>\n\n{s['text']}\n\n</details>\n\n"
+        md += f"<details><summary>原句（作答后再看）</summary>\n\n{s['text']}\n\n</details>\n\n"
 
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
@@ -234,7 +234,7 @@ def generate_repeat_set(output_dir: str, bank_key: str = None, count: int = 7):
     with open(os.path.join(exercise_dir, "answer-key.json"), "w", encoding="utf-8") as f:
         json.dump(answer_key, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Listen & Repeat 練習已產生：{exercise_dir}")
+    print(f"✅ Listen & Repeat 练习已产生：{exercise_dir}")
     print(f"   情境：{bank['context']}（{len(sentences)} 句）")
     return exercise_dir
 
@@ -250,15 +250,15 @@ def generate_interview_set(output_dir: str, topic: str = None):
     exercise_dir = os.path.join(output_dir, "prompts", f"interview-{datetime.now().strftime('%Y%m%d-%H%M')}")
     os.makedirs(exercise_dir, exist_ok=True)
 
-    md = f"# Take an Interview 練習\n\n"
-    md += f"**主題：** {topic_data['theme']}\n\n"
+    md = f"# Take an Interview 练习\n\n"
+    md += f"**主题：** {topic_data['theme']}\n\n"
     md += f"**情境：** {topic_data['intro']}\n\n"
-    md += "## 練習方式\n\n"
-    md += "1. 讀完題目後立刻開始回答（不要準備！）\n"
-    md += "2. 每題 45 秒（約 100–120 字）\n"
-    md += "3. 用 Idea → Reason → Example 結構\n"
-    md += "4. 錄音或打字記錄回答\n"
-    md += "5. 請 Claude 評估\n\n"
+    md += "## 练习方式\n\n"
+    md += "1. 读完题目后立刻开始回答（不要准备！）\n"
+    md += "2. 每题 45 秒（约 100–120 字）\n"
+    md += "3. 用 Idea → Reason → Example 结构\n"
+    md += "4. 录音或打字记录回答\n"
+    md += "5. 请 AI 评估\n\n"
 
     for i, q in enumerate(topic_data["questions"], 1):
         md += f"### Question {i}\n\n"
@@ -273,39 +273,39 @@ def generate_interview_set(output_dir: str, topic: str = None):
     with open(os.path.join(exercise_dir, "questions.json"), "w", encoding="utf-8") as f:
         json.dump(topic_data, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Interview 練習已產生：{exercise_dir}")
-    print(f"   主題：{topic_data['theme']}（4 題）")
+    print(f"✅ Interview 练习已产生：{exercise_dir}")
+    print(f"   主题：{topic_data['theme']}（4 题）")
     return exercise_dir
 
 
 def generate_full_set(output_dir: str):
     """Generate a complete speaking practice set (7 repeat + 4 interview)."""
-    print("🎤 產生完整口說練習（模擬真實考試）\n")
+    print("🎤 产生完整口说练习（模拟真实考试）\n")
     r = generate_repeat_set(output_dir)
     print()
     i = generate_interview_set(output_dir)
-    print(f"\n📝 完整口說練習已產生！")
+    print(f"\n📝 完整口说练习已产生！")
     print(f"   先做 Listen & Repeat，再做 Interview")
     return r, i
 
 
 def print_eval_framework(eval_type: str):
-    """Print evaluation template for Claude to use."""
+    """Print evaluation template for AI to use."""
     if eval_type == "repeat":
         print(REPEAT_EVAL_TEMPLATE.format(
             original="[原句]",
-            student_answer="[學生回答]"
+            student_answer="[学生回答]"
         ))
     elif eval_type == "interview":
         print(INTERVIEW_EVAL_TEMPLATE.format(
-            question="[題目]",
-            student_answer="[學生回答]",
-            word_count="[字數]"
+            question="[题目]",
+            student_answer="[学生回答]",
+            word_count="[字数]"
         ))
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 口說教練模組")
+    parser = argparse.ArgumentParser(description="TOEFL 口说教练模组")
     parser.add_argument("--type", choices=["repeat", "interview", "full", "evaluate"], default="full")
     parser.add_argument("--output", default="./speaking/")
     parser.add_argument("--topic", choices=list(INTERVIEW_TOPICS.keys()), help="Interview topic")

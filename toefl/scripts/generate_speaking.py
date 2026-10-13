@@ -33,7 +33,7 @@ from audio_utils import (
 try:
     import edge_tts
 except ImportError:
-    print("❌ edge-tts 未安裝。請執行：uv pip install edge-tts")
+    print("❌ edge-tts 未安装。请执行：uv pip install edge-tts")
     sys.exit(1)
 
 VOICES = {
@@ -332,7 +332,7 @@ async def main_async(args):
         for i, interview in enumerate(INTERVIEW_SETS, 1):
             await build_interview(interview, str(base), i)
 
-    print(f"\n🎤 口說練習已產生於：{base}")
+    print(f"\n🎤 口说练习已产生于：{base}")
 
 
 if __name__ == "__main__":

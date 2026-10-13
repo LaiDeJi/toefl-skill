@@ -49,30 +49,30 @@ def show_progress(target: str):
     config = load_config(target)
 
     print("=" * 50)
-    print("📊 TOEFL 備考進度總覽")
+    print("📊 TOEFL 备考进度总览")
     print("=" * 50)
-    print(f"🎯 目標分數：{config.get('target_score', '未設定')}")
-    print(f"📅 考試日期：{config.get('exam_date', '未設定')}")
-    print(f"🔥 連續天數：{prog.get('streak_days', 0)} 天")
-    print(f"⏱️ 累計學習：{prog.get('total_study_minutes', 0)} 分鐘")
+    print(f"🎯 目标分数：{config.get('target_score', '未设定')}")
+    print(f"📅 考试日期：{config.get('exam_date', '未设定')}")
+    print(f"🔥 连续天数：{prog.get('streak_days', 0)} 天")
+    print(f"⏱️ 累计学习：{prog.get('total_study_minutes', 0)} 分钟")
     print()
 
     if config.get("exam_date"):
         try:
             exam = datetime.strptime(config["exam_date"], "%Y-%m-%d").date()
             days_left = (exam - date.today()).days
-            print(f"⏳ 距離考試：{days_left} 天")
+            print(f"⏳ 距离考试：{days_left} 天")
         except ValueError:
             pass
 
     # Scores
-    print("\n📈 分數追蹤")
+    print("\n📈 分数追踪")
     print("-" * 40)
     baseline = prog.get("baseline_scores", {})
     latest = prog.get("latest_scores", {})
 
     sections = ["reading", "listening", "speaking", "writing"]
-    print(f"{'科目':<12} {'基線':<8} {'最新':<8} {'變化':<8}")
+    print(f"{'科目':<12} {'基线':<8} {'最新':<8} {'变化':<8}")
     for sec in sections:
         b = baseline.get(sec)
         l = latest.get(sec)
@@ -92,12 +92,12 @@ def show_progress(target: str):
     # Mock tests
     mocks = prog.get("mock_tests", [])
     if mocks:
-        print(f"\n📝 模擬考次數：{len(mocks)}")
+        print(f"\n📝 模拟考次数：{len(mocks)}")
         for i, m in enumerate(mocks[-3:], 1):  # Show last 3
-            print(f"  #{len(mocks) - 3 + i}: {m.get('date', '?')} — 總分 {m.get('total', '?')}")
+            print(f"  #{len(mocks) - 3 + i}: {m.get('date', '?')} — 总分 {m.get('total', '?')}")
 
     # Weekly completion
-    print("\n📅 每週完成度")
+    print("\n📅 每周完成度")
     print("-" * 40)
     weekly = prog.get("weekly_completion", {})
     for week_key in sorted(weekly.keys()):
@@ -110,7 +110,7 @@ def show_progress(target: str):
     # Vocabulary
     vocab = prog.get("vocabulary", {})
     if vocab.get("total_learned", 0) > 0:
-        print(f"\n📚 單字：已學 {vocab['total_learned']} / 已複習 {vocab.get('total_reviewed', 0)}")
+        print(f"\n📚 单字：已学 {vocab['total_learned']} / 已复习 {vocab.get('total_reviewed', 0)}")
 
 
 def log_daily(target: str, minutes: int, section: str = None, score: float = None):
@@ -162,7 +162,7 @@ def log_daily(target: str, minutes: int, section: str = None, score: float = Non
         prog["weekly_completion"][week_key]["completed"] = min(len(week_dates), 6)
 
     save_progress(target, prog)
-    print(f"✅ 已記錄：{minutes} 分鐘" + (f"（{section}: {score}）" if section and score else ""))
+    print(f"✅ 已记录：{minutes} 分钟" + (f"（{section}: {score}）" if section and score else ""))
 
 
 def log_mock_test(target: str, reading: float, listening: float, speaking: float, writing: float):
@@ -194,7 +194,7 @@ def log_mock_test(target: str, reading: float, listening: float, speaking: float
         prog["baseline_scores"] = prog["latest_scores"].copy()
 
     save_progress(target, prog)
-    print(f"✅ 模擬考已記錄：R={reading} L={listening} S={speaking} W={writing} → 總分 {total}")
+    print(f"✅ 模拟考已记录：R={reading} L={listening} S={speaking} W={writing} → 总分 {total}")
 
 
 def show_today(target: str):
@@ -206,8 +206,8 @@ def show_today(target: str):
     day = config.get("current_day", 1)
     minutes = config.get("daily_minutes", 30)
 
-    print(f"📅 今天：第 {week} 週 Day {day}")
-    print(f"⏱️ 預計時間：{minutes} 分鐘")
+    print(f"📅 今天：第 {week} 周 Day {day}")
+    print(f"⏱️ 预计时间：{minutes} 分钟")
     print()
 
     task_path = os.path.join(target, "plan", f"week-{week:02d}", "daily", f"day-{day}.md")
@@ -215,8 +215,8 @@ def show_today(target: str):
         with open(task_path, "r", encoding="utf-8") as f:
             print(f.read())
     else:
-        print(f"找不到任務檔案：{task_path}")
-        print("請執行 scaffold.py 重新產生計畫")
+        print(f"找不到任务档案：{task_path}")
+        print("请执行 scaffold.py 重新产生计划")
 
 
 def main():
@@ -242,7 +242,7 @@ def main():
         if all([args.reading, args.listening, args.speaking, args.writing]):
             log_mock_test(args.target, args.reading, args.listening, args.speaking, args.writing)
         else:
-            print("❌ 模擬考需提供四科分數：--reading --listening --speaking --writing")
+            print("❌ 模拟考需提供四科分数：--reading --listening --speaking --writing")
 
 
 if __name__ == "__main__":
