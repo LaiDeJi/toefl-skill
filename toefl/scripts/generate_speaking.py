@@ -38,7 +38,7 @@ except ImportError:
 
 VOICES = {
     "narrator":      {"id": "en-US-AriaNeural",  "rate": "-3%"},
-    "interviewer_f": {"id": "en-US-SaraNeural",  "rate": "-5%"},
+    "interviewer_f": {"id": "en-US-MichelleNeural",  "rate": "-5%"},
     "interviewer_m": {"id": "en-US-GuyNeural",   "rate": "-5%"},
 }
 
