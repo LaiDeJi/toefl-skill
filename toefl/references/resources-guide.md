@@ -182,9 +182,13 @@
 | Aria (女) | `en-US-AriaNeural` | 旁白、一般素材 |
 | Guy (男) | `en-US-GuyNeural` | 教授、學術演講 |
 | Jenny (女) | `en-US-JennyNeural` | 女學生角色 |
-| Tony (男) | `en-US-TonyNeural` | 男學生角色 |
-| Sara (女) | `en-US-SaraNeural` | 公告、正式通知 |
+| Andrew (男) | `en-US-AndrewNeural` | 男學生角色 |
+| Michelle (女) | `en-US-MichelleNeural` | 學術顧問、正式通知 |
 | Sonia (女) | `en-GB-SoniaNeural` | 英式口音練習 |
+
+> 註：Microsoft 會不定期停用語音 ID，停用後 edge-tts 會丟出
+> `NoAudioReceived`。合成失敗時，先用上方指令確認語音是否仍存在
+> （上表以 edge-tts 7.2.8 於 2026 年 10 月驗證）。
 
 ```bash
 # 列出所有可用語音
