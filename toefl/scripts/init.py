@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-TOEFL 备考系统 — 初始化模组 (init.py)
-首次使用时的引导精灵：问卷、诊断、个人化计划产生。
+TOEFL 备考系统 — 初始化模块 (init.py)
+首次使用时的引导精灵：问卷、诊断、个人化计划生成。
 
 Usage:
     python init.py --target ./my-study-folder
     python init.py --target . --non-interactive --target-score 5.0 --exam-date 2026-07-15 --daily-minutes 30 --weeks 12
 
-此模组会：
-1. 询问使用者的基本资讯（目标分数、考试日期、每日可用时间、英语程度自评）
-2. 产生个人化的 config.json
-3. 呼叫 scaffold.py 产生完整资料夹结构
-4. 产生一份简易诊断测验（diagnostic quiz）供使用者完成
+此模块会：
+1. 询问用户的基本信息（目标分数、考试日期、每日可用时间、英语程度自评）
+2. 生成个人化的 config.json
+3. 调用 scaffold.py 生成完整文件夹结构
+4. 生成一份简易诊断测验（diagnostic quiz）供用户完成
 5. 输出「接下来怎么做」的引导说明
 """
 
@@ -89,7 +89,7 @@ def interactive_onboarding() -> dict:
 
     # Weak areas
     print("\n🔍 你觉得自己最弱的是哪一科？（可多选，用逗号分隔）")
-    print("   R=阅读  L=听力  S=口说  W=写作  ?=不确定")
+    print("   R=阅读  L=听力  S=口语  W=写作  ?=不确定")
     weak_input = input("   最弱科目 [?]: ").strip().upper() or "?"
     weak_map = {"R": "reading", "L": "listening", "S": "speaking", "W": "writing", "?": "unknown"}
     weak_areas = [weak_map.get(w.strip(), "unknown") for w in weak_input.split(",")]
@@ -109,7 +109,7 @@ def interactive_onboarding() -> dict:
 
     # TTS preference
     print("\n🔊 听力练习的 TTS 引擎：")
-    print("   1) edge-tts（需网路，品质好，免费）← 推荐")
+    print("   1) edge-tts（需网络，品质好，免费）← 推荐")
     print("   2) Kokoro（离线，需下载模型约 200MB）")
     tts_choice = input("   选择 [1]: ").strip() or "1"
     tts_engine = "edge-tts" if tts_choice == "1" else "kokoro"
@@ -216,7 +216,7 @@ def generate_diagnostic(target: Path):
                 ],
             },
             "speaking": {
-                "description": "口说能力（2 题）— 请录音或打字回答",
+                "description": "口语能力（2 题）— 请录音或打字回答",
                 "questions": [
                     {
                         "type": "interview",
@@ -276,7 +276,7 @@ def generate_diagnostic(target: Path):
     with open(diag_dir / "diagnostic-quiz.md", "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"   📋 诊断测验已产生：{diag_dir}")
+    print(f"   📋 诊断测验已生成：{diag_dir}")
 
 
 def print_next_steps(target: Path, config: dict):
@@ -286,7 +286,7 @@ def print_next_steps(target: Path, config: dict):
     print("✅ 初始化完成！")
     print("=" * 55)
     print()
-    print(f"📂 备考资料夹：{target}")
+    print(f"📂 备考文件夹：{target}")
     print(f"🎯 目标分数：{config['target_score']}")
     print(f"📅 考试日期：{config.get('exam_date') or '未设定'}")
     print(f"⏱️ 每日时间：{config['daily_minutes']} 分钟")
@@ -306,9 +306,9 @@ def print_next_steps(target: Path, config: dict):
     print(f"     告诉 AI：「今天练什么？」")
     print()
     print("  💡 随时可以说：")
-    print("     「帮我做口说练习」")
+    print("     「帮我做口语练习」")
     print("     「批改我的写作」")
-    print("     「产生本周 Anki 单字卡」")
+    print("     「生成本周 Anki 单词卡」")
     print("     「看我的进度」")
     print("     「做模拟考」")
     print()
@@ -332,7 +332,7 @@ def main():
         with open(config_path, "r") as f:
             existing = json.load(f)
         if existing.get("initialized"):
-            print("⚠️ 此资料夹已经初始化过了。")
+            print("⚠️ 此文件夹已经初始化过了。")
             print(f"   config.json 建立于 {existing.get('created', '?')}")
             choice = input("   要重新初始化吗？(y/N): ").strip().lower()
             if choice != "y":
@@ -374,7 +374,7 @@ def main():
     config = generate_config(prep_dir, params)
 
     # Generate diagnostic
-    print("   📋 正在产生诊断测验...")
+    print("   📋 正在生成诊断测验...")
     generate_diagnostic(prep_dir)
 
     # Print next steps

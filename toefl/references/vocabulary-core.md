@@ -1,11 +1,11 @@
-# TOEFL 2026 核心学术字汇
+# TOEFL 2026 核心学术词汇
 
 > 基于 Academic Word List (AWL) 和 TOEFL 高频词整理
 > 特别强调 Complete the Words 题型需要的拼写能力
 
 ## 使用方式
 
-AI 在产生 Anki deck 或每日单字时，从此清单取用。
+AI 在生成 Anki deck 或每日单词时，从此清单取用。
 每周分配 20–30 个新字，12 周共约 240–360 字。
 
 ## 高频学术动词（按字母排序）

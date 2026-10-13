@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-TOEFL 备考系统 — 每日追踪模组 (daily.py)
-每天开启资料夹时的进入点：显示今日任务、追踪完成度、推进天数。
+TOEFL 备考系统 — 每日追踪模块 (daily.py)
+每天开启文件夹时的进入点：显示今日任务、追踪完成度、推进天数。
 
 Usage:
     python daily.py --target ./toefl-prep/                    # 显示今日任务
@@ -118,7 +118,7 @@ def show_today(target: str):
                 print(f"  {line.strip()}")
     else:
         print(f"  找不到 {task_path}")
-        print(f"  请确认 plan/week-{week:02d}/daily/ 资料夹存在")
+        print(f"  请确认 plan/week-{week:02d}/daily/ 文件夹存在")
 
     print()
     print("💡 可用指令：")
@@ -138,7 +138,7 @@ def show_today(target: str):
             print("-" * 50)
             primary = template.get("primary", {})
             secondary = template.get("secondary", {})
-            print(f"  📚 单字：{template.get('vocabulary', 5)} min")
+            print(f"  📚 单词：{template.get('vocabulary', 5)} min")
             print(f"  🔴 主练 {primary.get('section', '?').capitalize()}：{primary.get('minutes', '?')} min")
             print(f"  🟡 副练 {secondary.get('section', '?').capitalize()}：{secondary.get('minutes', '?')} min")
 
@@ -276,7 +276,7 @@ def show_week_status(target: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 每日追踪模组")
+    parser = argparse.ArgumentParser(description="TOEFL 每日追踪模块")
     parser.add_argument("--target", default="./toefl-prep/")
     parser.add_argument("--complete", action="store_true", help="Mark today as complete")
     parser.add_argument("--advance", action="store_true", help="Advance to next day")

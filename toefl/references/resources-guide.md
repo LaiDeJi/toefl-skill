@@ -1,6 +1,6 @@
 # TOEFL iBT 2026 备考素材完整指南
 
-> AI 在推荐素材、产生练习、或回答「我该用什么来练？」时参考此文件。
+> AI 在推荐素材、生成练习、或回答「我该用什么来练？」时参考此文件。
 > 所有资源经过验证为 2026 新制适用。最后更新：2026-04
 
 ## 目录
@@ -8,9 +8,9 @@
 2. [模拟考平台](#2-模拟考平台)
 3. [阅读素材来源](#3-阅读素材来源)
 4. [听力素材来源](#4-听力素材来源)
-5. [口说练习工具](#5-口说练习工具)
+5. [口语练习工具](#5-口语练习工具)
 6. [写作练习与批改](#6-写作练习与批改)
-7. [单字工具](#7-单字工具)
+7. [单词工具](#7-单词工具)
 8. [开源工具链（本系统使用）](#8-开源工具链)
 9. [YouTube 频道](#9-youtube-频道)
 10. [Podcast 推荐](#10-podcast-推荐)
@@ -26,7 +26,7 @@
 |------|------|------|
 | ETS 免费模拟考 | ets.org/toefl/.../sample-test-jan-2026-1.html | 2026 新制完整模拟考，包含所有新题型 |
 | ETS Interactive Sampler | ets.org/toefl/.../prepare.html | 互动式各题型体验，可线上作答 |
-| ETS 免费模拟考 PDF | ETS 官网下载 | 可离线练习，但听力无音档 |
+| ETS 免费模拟考 PDF | ETS 官网下载 | 可离线练习，但听力无音频 |
 | ETS TOEFL Preparation | ets.org/toefl/test-takers/ibt/prepare.html | 官方备考资源总览 |
 | ETS Score Scale 说明 | ets.org/toefl/.../score-scale-update.html | 新旧制对照表、CEFR 对应 |
 | TPO (TOEFL Practice Online) | ETS 官网 | 历年真题（$45/次），旧制格式但练基本功仍有用 |
@@ -37,7 +37,7 @@
 
 | 平台 | 费用 | 2026 适用 | 特色 |
 |------|------|-----------|------|
-| **Magoosh** | 免费模考 + 付费课程 | ✅ | 100% 官方 ETS 题目，自适应模拟，口说/写作即时评分 |
+| **Magoosh** | 免费模考 + 付费课程 | ✅ | 100% 官方 ETS 题目，自适应模拟，口语/写作即时评分 |
 | **BestMyTest** | 免费试用 + 付费 | ✅ | 模拟考 + 听力专项练习 |
 | **TestSucceed** | 免费 + 付费 | ✅ | 15+ 套 2026 模拟考，含评分 |
 | **TestGlider** | 免费试用 | ✅ | AI 评分，2026 新题型 |
@@ -81,7 +81,7 @@
 ### Choose a Response 练习
 | 来源 | 说明 |
 |------|------|
-| 本系统 `generate_listening.py` | 用 edge-tts 产生日常对话音档 |
+| 本系统 `generate_listening.py` | 用 edge-tts 生成日常对话音频 |
 | **English Listening Practice (YouTube)** | 短句听力 + 回复选择 |
 
 ### Conversations & Announcements
@@ -109,23 +109,23 @@
 | **TED-Ed** | 最佳跟读素材：清晰发音 + 学术内容 |
 | **BBC Learning English** | 6 Minute English 适合入门 |
 | **ELSA Speak（App）** | AI 发音矫正，免费版可用 |
-| 本系统 `generate_listening.py --type repeat` | 产生跟读句 + 音档 |
+| 本系统 `generate_listening.py --type repeat` | 生成跟读句 + 音频 |
 
 ---
 
-## 5. 口说练习工具
+## 5. 口语练习工具
 
 | 工具 | 费用 | 说明 |
 |------|------|------|
 | **My Speaking Score** | 免费 + 付费 | ⭐ TOEFL 2026 专用，SpeechRater 引擎，Listen & Repeat + Interview 评分 |
 | **ELSA Speak** | 免费版可用 | 发音矫正 AI，音素级别分析 |
 | **SpeechAce** | 免费试用 | 发音评分 API |
-| 本系统 `speaking_coach.py` | 免费 | 产生题目 + AI 评估 |
+| 本系统 `speaking_coach.py` | 免费 | 生成题目 + AI 评估 |
 | 手机录音 App | 免费 | 录音后自己回听或传给 AI |
 
-### 口说练习法
+### 口语练习法
 1. **Shadowing（跟读）：** 听 TED-Ed → 暂停 → 立即复述 → 对比
-2. **即兴回答：** 用 speaking_coach.py 产生题目 → 计时 45 秒 → 录音
+2. **即兴回答：** 用 speaking_coach.py 生成题目 → 计时 45 秒 → 录音
 3. **回听分析：** 听自己的录音，检查停顿、文法、时间控制
 4. **AI 评估：** 把文字版回答贴给 AI，依 rubric 评分
 
@@ -139,25 +139,25 @@
 | **Writing30.com** | 免费 + 付费 | AI 即时写作批改，2026 新题型 |
 | **Grammarly** | 免费版 | 基本文法检查，不替代 TOEFL 批改 |
 | **LanguageTool** | 免费 | 开源文法检查 |
-| 本系统 `writing_grader.py` | 免费 | 产生题目 + AI 依 ETS rubric 批改 |
+| 本系统 `writing_grader.py` | 免费 | 生成题目 + AI 依 ETS rubric 批改 |
 | 本系统 `scoring-rubrics.md` | — | AI 批改时的评分标准 |
 
 ### 写作素材
-- Email 范本：搜寻 "professional email templates" 了解格式
+- Email 范本：搜索 "professional email templates" 了解格式
 - Academic Discussion：可用任何新闻议题作为讨论题目
-- Build a Sentence：本系统内建 12+ 题，AI 可即时追加
+- Build a Sentence：本系统内置 12+ 题，AI 可即时追加
 
 ---
 
-## 7. 单字工具
+## 7. 单词工具
 
 | 工具 | 费用 | 说明 |
 |------|------|------|
-| **Anki** | 免费（桌面版） | ⭐ 间隔重复记忆软体 |
-| **Magoosh TOEFL Vocabulary App** | 免费 | 600+ 托福单字，iOS/Android |
+| **Anki** | 免费（桌面版） | ⭐ 间隔重复记忆软件 |
+| **Magoosh TOEFL Vocabulary App** | 免费 | 600+ 托福单词，iOS/Android |
 | **Quizlet** | 免费 | 线上闪卡，有 TOEFL 预建 deck |
-| 本系统 `generate_anki.py` | 免费 | 产生 .apkg（3 种卡型含拼写练习） |
-| 本系统 `vocabulary-core.md` | — | AWL 核心字汇 + 拼写陷阱 |
+| 本系统 `generate_anki.py` | 免费 | 生成 .apkg（3 种卡型含拼写练习） |
+| 本系统 `vocabulary-core.md` | — | AWL 核心词汇 + 拼写陷阱 |
 
 ### 推荐学习法
 1. 每天 Anki 复习旧卡（5 min）+ 学 20 张新卡
@@ -172,7 +172,7 @@
 | 工具 | 用途 | 安装指令 |
 |------|------|----------|
 | `edge-tts` | 免费 TTS（Microsoft Edge 语音） | `pip install edge-tts` |
-| `genanki` | Python Anki deck 产生器 | `pip install genanki` |
+| `genanki` | Python Anki deck 生成器 | `pip install genanki` |
 | `Kokoro TTS` | 离线高品质 TTS（82M 参数） | `pip install kokoro` |
 | `Piper TTS` | 超轻量离线 TTS（可跑在 RPi） | 见 GitHub |
 
@@ -194,7 +194,7 @@
 # 列出所有可用语音
 edge-tts --list-voices | grep en-
 
-# 产生音档
+# 生成音频
 edge-tts --voice en-US-AriaNeural --text "Hello world" --write-media hello.mp3
 
 # 调整语速（模拟不同难度）
@@ -212,11 +212,11 @@ edge-tts --rate=+15% --voice en-US-GuyNeural --text "..." --write-media fast.mp3
 | **TED-Ed** | 教育动画 | 听力 + 跟读（⭐最推荐） |
 | **CrashCourse** | 各学科入门 | 听力（学术演讲模拟） |
 | **TOEFL Resources (Michael)** | TOEFL 备考技巧 | 策略 + 范例回答 |
-| **TST Prep** | TOEFL 教学 | 写作/口说技巧 |
-| **Magoosh TOEFL** | 备考影片 | 策略 + 2026 新制解说 |
-| **NoteFull** | TOEFL 模板 | 口说/写作结构 |
+| **TST Prep** | TOEFL 教学 | 写作/口语技巧 |
+| **Magoosh TOEFL** | 备考视频 | 策略 + 2026 新制解说 |
+| **NoteFull** | TOEFL 模板 | 口语/写作结构 |
 | **English with Lucy** | 英语学习 | 发音、文法 |
-| **Rachel's English** | 美式发音 | 口说清晰度训练 |
+| **Rachel's English** | 美式发音 | 口语清晰度训练 |
 | **Khan Academy** | 各学科教学 | 听力素材（学术） |
 
 ---
@@ -253,7 +253,7 @@ edge-tts --rate=+15% --voice en-US-GuyNeural --text "..." --write-media fast.mp3
 自适应引擎（adaptive.py）会根据分数调整，但以下是基础排程：
 
 ### 基础期（Week 1-4）
-| 日 | 听力素材 | 阅读素材 | 口说 | 写作 |
+| 日 | 听力素材 | 阅读素材 | 口语 | 写作 |
 |----|----------|----------|------|------|
 | 1 | VOA 1篇 | Wikipedia Simple 1篇 | — | — |
 | 2 | BBC 6min 1集 | — | 跟读 TED-Ed 1支 | — |
@@ -265,13 +265,13 @@ edge-tts --rate=+15% --voice en-US-GuyNeural --text "..." --write-media fast.mp3
 ### 强化期（Week 5-8）
 - 听力升级：NPR Short Wave → 60-Second Science
 - 阅读升级：Scientific American 短文
-- 口说：每天 shadowing 15 分钟
+- 口语：每天 shadowing 15 分钟
 - 写作：每两天一篇，AI 批改
 
 ### 冲刺期（Week 9-12）
-- 听力：模拟考音档，只听一次
+- 听力：模拟考音频，只听一次
 - 阅读：限时练习
-- 口说：完整模拟（7 repeat + 4 interview）
+- 口语：完整模拟（7 repeat + 4 interview）
 - 写作：计时完成全部三种题型
 
 ---
@@ -284,4 +284,4 @@ edge-tts --rate=+15% --voice en-US-GuyNeural --text "..." --write-media fast.mp3
 | 未标明「2026 format」的线上练习 | 可能是旧制题目 |
 | 非授权的 TPO 外流版本 | 品质不稳定，可能有错误 |
 | 纯机器翻译的素材 | 文法和用词可能不自然 |
-| 只练模板的备考书 | 2026 AI 评分会侦测模板并扣分 |
+| 只练模板的备考书 | 2026 AI 评分会检测模板并扣分 |

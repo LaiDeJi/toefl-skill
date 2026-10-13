@@ -356,7 +356,7 @@ def main():
     if args.type in ("academic", "all"):
         generate_academic_passages(ACADEMIC_PASSAGES, args.output, difficulty)
 
-    print(f"\n📖 阅读练习已产生于：{args.output}")
+    print(f"\n📖 阅读练习已生成于：{args.output}")
 
 
 if __name__ == "__main__":

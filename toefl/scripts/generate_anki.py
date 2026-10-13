@@ -163,7 +163,7 @@ def generate_deck(words: list, week: int, output_dir: str):
 
     output_path = os.path.join(output_dir, f"toefl-week-{week:02d}.apkg")
     genanki.Package(deck).write_to_file(output_path)
-    print(f"✅ Anki deck 已产生：{output_path}（{len(words)} 张卡片）")
+    print(f"✅ Anki deck 已生成：{output_path}（{len(words)} 张卡片）")
     return output_path
 
 

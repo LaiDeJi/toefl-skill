@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-TOEFL 备考系统 — 口说教练模组 (speaking_coach.py)
-产生口说题目、Listen & Repeat 跟读句、Interview 练习题，
+TOEFL 备考系统 — 口语教练模块 (speaking_coach.py)
+生成口语题目、Listen & Repeat 跟读句、Interview 练习题，
 并提供 AI 评估框架。
 
 Usage:
@@ -210,7 +210,7 @@ def generate_repeat_set(output_dir: str, bank_key: str = None, count: int = 7):
     md += f"**情境：** {bank['context']}\n"
     md += f"**图片提示：** {bank['image_hint']}\n\n"
     md += "## 练习方式\n\n"
-    md += "1. 听音档（或请 AI 念出句子）\n"
+    md += "1. 听音频（或请 AI 念出句子）\n"
     md += "2. 听完后立刻复述\n"
     md += "3. 录音或打字记录你的回答\n"
     md += "4. 请 AI 评估\n\n"
@@ -234,7 +234,7 @@ def generate_repeat_set(output_dir: str, bank_key: str = None, count: int = 7):
     with open(os.path.join(exercise_dir, "answer-key.json"), "w", encoding="utf-8") as f:
         json.dump(answer_key, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Listen & Repeat 练习已产生：{exercise_dir}")
+    print(f"✅ Listen & Repeat 练习已生成：{exercise_dir}")
     print(f"   情境：{bank['context']}（{len(sentences)} 句）")
     return exercise_dir
 
@@ -273,18 +273,18 @@ def generate_interview_set(output_dir: str, topic: str = None):
     with open(os.path.join(exercise_dir, "questions.json"), "w", encoding="utf-8") as f:
         json.dump(topic_data, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Interview 练习已产生：{exercise_dir}")
+    print(f"✅ Interview 练习已生成：{exercise_dir}")
     print(f"   主题：{topic_data['theme']}（4 题）")
     return exercise_dir
 
 
 def generate_full_set(output_dir: str):
     """Generate a complete speaking practice set (7 repeat + 4 interview)."""
-    print("🎤 产生完整口说练习（模拟真实考试）\n")
+    print("🎤 生成完整口语练习（模拟真实考试）\n")
     r = generate_repeat_set(output_dir)
     print()
     i = generate_interview_set(output_dir)
-    print(f"\n📝 完整口说练习已产生！")
+    print(f"\n📝 完整口语练习已生成！")
     print(f"   先做 Listen & Repeat，再做 Interview")
     return r, i
 
@@ -305,7 +305,7 @@ def print_eval_framework(eval_type: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 口说教练模组")
+    parser = argparse.ArgumentParser(description="TOEFL 口语教练模块")
     parser.add_argument("--type", choices=["repeat", "interview", "full", "evaluate"], default="full")
     parser.add_argument("--output", default="./speaking/")
     parser.add_argument("--topic", choices=list(INTERVIEW_TOPICS.keys()), help="Interview topic")

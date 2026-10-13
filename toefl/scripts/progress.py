@@ -110,7 +110,7 @@ def show_progress(target: str):
     # Vocabulary
     vocab = prog.get("vocabulary", {})
     if vocab.get("total_learned", 0) > 0:
-        print(f"\n📚 单字：已学 {vocab['total_learned']} / 已复习 {vocab.get('total_reviewed', 0)}")
+        print(f"\n📚 单词：已学 {vocab['total_learned']} / 已复习 {vocab.get('total_reviewed', 0)}")
 
 
 def log_daily(target: str, minutes: int, section: str = None, score: float = None):
@@ -215,8 +215,8 @@ def show_today(target: str):
         with open(task_path, "r", encoding="utf-8") as f:
             print(f.read())
     else:
-        print(f"找不到任务档案：{task_path}")
-        print("请执行 scaffold.py 重新产生计划")
+        print(f"找不到任务文件：{task_path}")
+        print("请执行 scaffold.py 重新生成计划")
 
 
 def main():

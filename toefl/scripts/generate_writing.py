@@ -296,7 +296,7 @@ def main():
     if args.type in ("discussion", "all"):
         generate_discussions(DISCUSSION_PROMPTS, args.output)
 
-    print(f"\n✍️ 写作练习已产生于：{args.output}")
+    print(f"\n✍️ 写作练习已生成于：{args.output}")
 
 
 if __name__ == "__main__":

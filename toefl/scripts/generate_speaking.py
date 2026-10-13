@@ -332,7 +332,7 @@ async def main_async(args):
         for i, interview in enumerate(INTERVIEW_SETS, 1):
             await build_interview(interview, str(base), i)
 
-    print(f"\n🎤 口说练习已产生于：{base}")
+    print(f"\n🎤 口语练习已生成于：{base}")
 
 
 if __name__ == "__main__":

@@ -382,7 +382,7 @@ async def build_conversation_audio(conv: dict, output_dir: str) -> list:
             if os.path.exists(src):
                 os.rename(src, dst)
                 written.append(f"line-{i:02d}.mp3")
-        print(f"  ⚠️ 无法合并，已保留个别音档")
+        print(f"  ⚠️ 无法合并，已保留个别音频")
 
     # Cleanup tmp
     import shutil
@@ -583,12 +583,12 @@ async def generate_all(args):
                     written = await build_choose_response_audio(item, item_dir)
                     entries[folder] = {"hash": ih, "files": written}
                 else:
-                    print(f"✅ Choose a Response {i+1}：内容未变，沿用既有音档")
+                    print(f"✅ Choose a Response {i+1}：内容未变，沿用既有音频")
                     entries[folder] = entry
                 write_exercise_meta(item, item_dir, "choose-response")
             for name in commit_manifest(m_path, "choose-response", str_cr, entries, allowed):
                 print(f"🗑️ 已移除先前执行留下的过期练习：choose-response/{name}")
-            print(f"✅ Choose a Response：{len(items)} 题已产生")
+            print(f"✅ Choose a Response：{len(items)} 题已生成")
 
     if args.type in ("conversation", "all"):
         convs = [c for c in CONVERSATIONS if c["difficulty"] in allowed]
@@ -609,7 +609,7 @@ async def generate_all(args):
                     entries[folder] = {"hash": ih, "files": written}
                     print(f"✅ Conversation {i+1}: {conv['title']}")
                 else:
-                    print(f"✅ Conversation {i+1}: {conv['title']}（内容未变，沿用既有音档）")
+                    print(f"✅ Conversation {i+1}: {conv['title']}（内容未变，沿用既有音频）")
                     entries[folder] = entry
                 write_exercise_meta(conv, conv_dir, "conversation")
             for name in commit_manifest(m_path, "conversation", str_base, entries, allowed):
@@ -633,7 +633,7 @@ async def generate_all(args):
                     written = await build_academic_talk_audio(ann, ann_dir)
                     entries[folder] = {"hash": ih, "files": written}
                 else:
-                    print(f"✅ Announcement {i+1}: {ann['title']}（内容未变，沿用既有音档）")
+                    print(f"✅ Announcement {i+1}: {ann['title']}（内容未变，沿用既有音频）")
                     entries[folder] = entry
                 write_exercise_meta(ann, ann_dir, "announcement")
                 print(f"✅ Announcement {i+1}: {ann['title']}")
@@ -658,14 +658,14 @@ async def generate_all(args):
                     written = await build_academic_talk_audio(talk, talk_dir)
                     entries[folder] = {"hash": ih, "files": written}
                 else:
-                    print(f"✅ Academic Talk {i+1}: {talk['title']}（内容未变，沿用既有音档）")
+                    print(f"✅ Academic Talk {i+1}: {talk['title']}（内容未变，沿用既有音频）")
                     entries[folder] = entry
                 write_exercise_meta(talk, talk_dir, "academic-talk")
                 print(f"✅ Academic Talk {i+1}: {talk['title']}")
             for name in commit_manifest(m_path, "academic", str_base, entries, allowed):
                 print(f"🗑️ 已移除先前执行留下的过期练习：{name}")
 
-    print(f"\n🎧 听力练习已产生于：{base}")
+    print(f"\n🎧 听力练习已生成于：{base}")
 
 
 if __name__ == "__main__":

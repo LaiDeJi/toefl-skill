@@ -110,7 +110,7 @@ def commit_manifest(path: str, ex_type: str, scope_dir: str, entries: dict, diff
             shutil.rmtree(target)
             pruned.append(name)
         except OSError:
-            print(f"⚠️  清除过期资料夹失败（接下来不会再管理它）：{target}")
+            print(f"⚠️  清除过期文件夹失败（接下来不会再管理它）：{target}")
 
     payload = {"type": ex_type, "difficulty": list(difficulty), "entries": entries}
     tmp = f"{path}.tmp"

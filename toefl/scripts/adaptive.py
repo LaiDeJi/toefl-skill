@@ -7,7 +7,7 @@ TOEFL 备考系统 — 自适应引擎 (adaptive.py)
 2. 题目难度等级
 3. 本周重点科目
 4. 里程碑检查与计划修正建议
-5. 单字复习排程（遗忘曲线加权）
+5. 单词复习排程（遗忘曲线加权）
 
 Usage:
     python adaptive.py --target ./toefl-prep/ --action analyze     # 分析现况，输出调整建议
@@ -52,7 +52,7 @@ MILESTONES = {
             "vocab_learned": 60,
             "mock_tests": 1,
         },
-        "checks": ["是否完成诊断测验", "是否累积 60+ 单字", "是否完成第一次模拟考"],
+        "checks": ["是否完成诊断测验", "是否累积 60+ 单词", "是否完成第一次模拟考"],
     },
     0.50: {  # 50% 进度（第6周）
         "name": "中期检查点",
@@ -298,7 +298,7 @@ def analyze(target: str):
     }
     adaptive_path = os.path.join(target, "adaptive.json")
     save_json(adaptive_path, adaptive_config)
-    print(f"\n📁 自适应设定已储存：{adaptive_path}")
+    print(f"\n📁 自适应设定已存储：{adaptive_path}")
 
     return adaptive_config
 
@@ -353,7 +353,7 @@ def rebalance(target: str):
     primary_time = max(10, round(remaining * weights[primary] / (weights[primary] + weights[secondary] + 0.001) * 1.2))
     secondary_time = remaining - primary_time
 
-    print(f"  📚 单字复习：{vocab_time} 分钟")
+    print(f"  📚 单词复习：{vocab_time} 分钟")
     print(f"  🔴 主练（{primary.capitalize()}）：{primary_time} 分钟")
     print(f"  🟡 副练（{secondary.capitalize()}）：{secondary_time} 分钟")
     print(f"  ─── 合计：{daily_minutes} 分钟")
@@ -421,7 +421,7 @@ def show_difficulty(target: str):
                 print(f"    💡 Academic Talks + 推论题，只听一次")
         elif sec == "speaking":
             if level <= 2:
-                print(f"    💡 Repeat 练短句（5 词以下），Interview 先打字再口说")
+                print(f"    💡 Repeat 练短句（5 词以下），Interview 先打字再口语")
             elif level <= 3:
                 print(f"    💡 Repeat 练中长句，Interview 计时 45 秒")
             else:
@@ -475,7 +475,7 @@ def checkpoint(target: str):
         # Evaluate each check
         if "诊断测验" in check_desc:
             ok = config.get("diagnostic_completed", False)
-        elif "单字" in check_desc:
+        elif "单词" in check_desc:
             expected_vocab = milestone["expected"].get("vocab_learned", 0)
             actual_vocab = vocab.get("total_learned", 0)
             ok = actual_vocab >= expected_vocab

@@ -1,12 +1,12 @@
-# 听力模组使用指南
+# 听力模块使用指南
 
-## 产生练习
+## 生成练习
 ```bash
 uv run python scripts/generate_listening.py --type all --output ./listening/ --difficulty hard
 ```
 
 ## 题型与脚本对应
-| 题型 | 参数 | 音档设计 |
+| 题型 | 参数 | 音频设计 |
 |------|------|----------|
 | Choose a Response | `--type choose-response` | 语句 → 2s 停顿 → beep |
 | Conversation | `--type conversation` | 每句间 0.8s 停顿 |
@@ -14,10 +14,10 @@ uv run python scripts/generate_listening.py --type all --output ./listening/ --d
 | Academic Talk | `--type academic` | [PAUSE] 标记 → 1.2s 自然停顿 |
 
 ## AI 引导流程
-1. 播放音档前提醒：「只播放一次，做好笔记准备」
+1. 播放音频前提醒：「只播放一次，做好笔记准备」
 2. 播放后出题（题目在 questions.md）
-3. 使用者作答后对答案，讲解错误原因
-4. 如有需要，提供逐字稿（transcript.md）让使用者比对
+3. 用户作答后对答案，讲解错误原因
+4. 如有需要，提供逐字稿（transcript.md）让用户比对
 5. 分析笔记问题：是听力问题、还是题型理解问题、还是笔记不足？
 
 ## 笔记教学重点

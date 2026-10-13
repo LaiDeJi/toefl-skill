@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-TOEFL 备考系统 — 写作批改模组 (writing_grader.py)
-产生写作题目（Build a Sentence / Email / Academic Discussion），
+TOEFL 备考系统 — 写作批改模块 (writing_grader.py)
+生成写作题目（Build a Sentence / Email / Academic Discussion），
 提供 AI 批改框架和评分标准。
 
 Usage:
@@ -128,7 +128,7 @@ def generate_sentence_exercises(output_dir: str, count: int = 10):
     selected = random.sample(BUILD_SENTENCES, min(count, len(BUILD_SENTENCES)))
 
     md = "# Build a Sentence 练习\n\n"
-    md += "**规则：** 将打乱的单字排列成正确的句子。可能有一个多余的干扰词。\n"
+    md += "**规则：** 将打乱的单词排列成正确的句子。可能有一个多余的干扰词。\n"
     md += "**计分：** 全对 1 分，有任何错误 0 分。\n\n"
 
     for i, s in enumerate(selected, 1):
@@ -138,7 +138,7 @@ def generate_sentence_exercises(output_dir: str, count: int = 10):
         random.shuffle(words)
 
         md += f"### 第 {i} 题\n\n"
-        md += f"**单字：** {' / '.join(words)}\n\n"
+        md += f"**单词：** {' / '.join(words)}\n\n"
         md += f"**我的答案：** ________________________________\n\n"
         md += f"<details><summary>正确答案</summary>\n\n"
         md += f"{s['answer']}\n\n"
@@ -151,7 +151,7 @@ def generate_sentence_exercises(output_dir: str, count: int = 10):
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"✅ Build a Sentence 练习已产生：{exercise_dir}（{len(selected)} 题）")
+    print(f"✅ Build a Sentence 练习已生成：{exercise_dir}（{len(selected)} 题）")
     return exercise_dir
 
 
@@ -188,7 +188,7 @@ def generate_email_exercise(output_dir: str, prompt_index: int = None):
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"✅ Email 练习已产生：{exercise_dir}")
+    print(f"✅ Email 练习已生成：{exercise_dir}")
     return exercise_dir
 
 
@@ -222,25 +222,25 @@ def generate_discussion_exercise(output_dir: str, prompt_index: int = None):
     with open(os.path.join(exercise_dir, "exercise.md"), "w", encoding="utf-8") as f:
         f.write(md)
 
-    print(f"✅ Academic Discussion 练习已产生：{exercise_dir}")
+    print(f"✅ Academic Discussion 练习已生成：{exercise_dir}")
     return exercise_dir
 
 
 def generate_full_writing(output_dir: str):
     """Generate a complete writing practice set."""
-    print("✍️ 产生完整写作练习（模拟真实考试）\n")
+    print("✍️ 生成完整写作练习（模拟真实考试）\n")
     s = generate_sentence_exercises(output_dir, 10)
     print()
     e = generate_email_exercise(output_dir)
     print()
     d = generate_discussion_exercise(output_dir)
-    print(f"\n📝 完整写作练习已产生！")
+    print(f"\n📝 完整写作练习已生成！")
     print(f"   顺序：Build a Sentence → Email → Discussion")
     return s, e, d
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 写作批改模组")
+    parser = argparse.ArgumentParser(description="TOEFL 写作批改模块")
     parser.add_argument("--type", choices=["sentence", "email", "discussion", "full"], default="full")
     parser.add_argument("--output", default="./writing/")
     parser.add_argument("--count", type=int, default=10, help="Number of sentence exercises")

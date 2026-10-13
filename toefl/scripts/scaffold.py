@@ -74,7 +74,7 @@ PHASES = {
     "foundation": {
         "name": "基础期",
         "weeks": (1, 4),
-        "focus": "熟悉题型、建立每日习惯、累积基础字汇",
+        "focus": "熟悉题型、建立每日习惯、累积基础词汇",
     },
     "intensive": {
         "name": "强化期",
@@ -92,9 +92,9 @@ PHASES = {
 DAILY_TEMPLATES = {
     "reading": "## 阅读练习\n\n- [ ] Complete the Words：5 题\n- [ ] Read in Daily Life：2 篇\n- [ ] Academic Passage：1 篇\n\n### 笔记区\n\n",
     "listening": "## 听力练习\n\n- [ ] Choose a Response：5 题\n- [ ] Conversation：1 段\n- [ ] Announcement：1 段\n- [ ] 笔记练习：记录关键词\n\n### 笔记区\n\n",
-    "speaking": "## 口说练习\n\n- [ ] Listen & Repeat：跟读 7 句（shadowing 15 分钟）\n- [ ] Interview：即兴回答 2 题（各 45 秒）\n- [ ] 录音并回听\n\n### 自我评估\n\n| 维度 | 自评 (1-5) | 备注 |\n|------|-----------|------|\n| Fluency | | |\n| Intelligibility | | |\n| Language Use | | |\n| Organization | | |\n\n",
+    "speaking": "## 口语练习\n\n- [ ] Listen & Repeat：跟读 7 句（shadowing 15 分钟）\n- [ ] Interview：即兴回答 2 题（各 45 秒）\n- [ ] 录音并回听\n\n### 自我评估\n\n| 维度 | 自评 (1-5) | 备注 |\n|------|-----------|------|\n| Fluency | | |\n| Intelligibility | | |\n| Language Use | | |\n| Organization | | |\n\n",
     "writing": "## 写作练习\n\n- [ ] Build a Sentence：10 题\n- [ ] Write an Email 或 Academic Discussion（择一）\n\n### 草稿区\n\n\n### AI 批改结果\n\n（完成后请 AI 批改）\n",
-    "vocabulary": "## 单字复习\n\n- [ ] Anki 复习（旧卡）\n- [ ] 学习 20 个新单字\n- [ ] 用新单字造句 5 句\n\n### 今日新单字\n\n| 单字 | 词性 | 定义 | 例句 |\n|------|------|------|------|\n| | | | |\n\n",
+    "vocabulary": "## 单词复习\n\n- [ ] Anki 复习（旧卡）\n- [ ] 学习 20 个新单词\n- [ ] 用新单词造句 5 句\n\n### 今日新单词\n\n| 单词 | 词性 | 定义 | 例句 |\n|------|------|------|------|\n| | | | |\n\n",
     "review": "## 周末复习\n\n- [ ] Anki 全部复习\n- [ ] 重做本周错题\n- [ ] 更新进度追踪\n- [ ] 检查本周目标完成度\n\n### 本周反思\n\n**做得好的：**\n\n**需要改进的：**\n\n**下周重点：**\n\n",
 }
 
@@ -135,10 +135,10 @@ def create_weekly_goals(week: int, total_weeks: int) -> str:
             goals += "- [ ] 完成诊断模拟考，记录基线分数\n"
             goals += "- [ ] 熟悉所有新制题型\n"
             goals += "- [ ] 建立每日 Anki 习惯\n"
-            goals += "- [ ] 累积 30 个新单字\n"
+            goals += "- [ ] 累积 30 个新单词\n"
         elif week == 2:
             goals += "- [ ] 阅读三种题型各练习 10 题以上\n"
-            goals += "- [ ] 累积 100 个新单字（含拼写）\n"
+            goals += "- [ ] 累积 100 个新单词（含拼写）\n"
             goals += "- [ ] Complete the Words 正确率 ≥ 60%\n"
         elif week == 3:
             goals += "- [ ] 听力四种题型各练习 5 题以上\n"
@@ -219,7 +219,7 @@ def create_readme(target: Path, args):
 
 ## Quick Start
 
-1. 每天打开这个资料夹
+1. 每天打开这个文件夹
 2. 启动 AI
 3. 告诉 AI：「今天练什么？」
 
@@ -228,10 +228,10 @@ def create_readme(target: Path, args):
 | 指令 | 说明 |
 |------|------|
 | `今天练什么？` | 查看今日任务 |
-| `帮我做口说练习` | 产生口说题目 + 评估 |
+| `帮我做口语练习` | 生成口语题目 + 评估 |
 | `批改我的写作` | 提交写作草稿让 AI 批改 |
-| `产生听力练习` | 用 TTS 产生听力音档 |
-| `产生 Anki 单字卡` | 产生本周的 Anki deck |
+| `生成听力练习` | 用 TTS 生成听力音频 |
+| `生成 Anki 单词卡` | 生成本周的 Anki deck |
 | `模拟考` | 开始一次完整模拟考 |
 | `看进度` | 显示学习进度和统计 |
 | `弱项分析` | 分析各科弱项并给建议 |
@@ -245,13 +245,13 @@ def create_readme(target: Path, args):
 | 每日时间 | {daily_minutes} 分钟 |
 | 总周数 | {weeks} 周 |
 
-## 资料夹说明
+## 文件夹说明
 
 - `plan/` — 每周计划和每日任务
-- `vocabulary/` — 单字表和 Anki deck
+- `vocabulary/` — 单词表和 Anki deck
 - `reading/` — 阅读练习
-- `listening/` — 听力练习（含 TTS 音档）
-- `speaking/` — 口说练习和回馈
+- `listening/` — 听力练习（含 TTS 音频）
+- `speaking/` — 口语练习和反馈
 - `writing/` — 写作练习和批改
 - `mock-tests/` — 模拟考
 
@@ -337,7 +337,7 @@ def scaffold(args):
     print(f"   📅 {args.weeks} 周计划")
     print(f"   ⏱️ 每日 {args.daily_minutes} 分钟")
     print(f"   🎯 目标分数 {args.target_score}")
-    print(f"\n下一步：进入 {prep_dir} 资料夹，告诉 AI「今天练什么？」")
+    print(f"\n下一步：进入 {prep_dir} 文件夹，告诉 AI「今天练什么？」")
 
 
 if __name__ == "__main__":

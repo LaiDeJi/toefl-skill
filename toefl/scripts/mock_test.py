@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-TOEFL 备考系统 — 模拟考模组 (mock_test.py)
-产生并管理完整的 TOEFL 模拟考。
+TOEFL 备考系统 — 模拟考模块 (mock_test.py)
+生成并管理完整的 TOEFL 模拟考。
 
 Usage:
-    python mock_test.py --target ./toefl-prep/ --action create   # 产生新模拟考
+    python mock_test.py --target ./toefl-prep/ --action create   # 生成新模拟考
     python mock_test.py --target ./toefl-prep/ --action score --test 1 --reading 4.5 --listening 5.0 --speaking 4.0 --writing 4.5
     python mock_test.py --target ./toefl-prep/ --action history   # 查看历次成绩
 """
@@ -48,7 +48,7 @@ def create_mock_test(target: str):
 
 请告诉 AI：「开始模拟考阅读」
 
-AI 会产生：
+AI 会生成：
 - Complete the Words 题目
 - Read in Daily Life 题目
 - Academic Passage 题目
@@ -62,19 +62,19 @@ AI 会产生：
 
 请告诉 AI：「开始模拟考听力」
 
-AI 会产生音档（需 edge-tts）或念出内容：
+AI 会生成音频（需 edge-tts）或念出内容：
 - Choose a Response
 - Conversations
 - Announcements
 - Academic Talks（如果进入 Hard 路线）
 
-**重要：** 音档只听一次，不可倒带。
+**重要：** 音频只听一次，不可倒带。
 
 ---
 
 ## 🎤 Section 3: Speaking（约 10 分钟）
 
-请告诉 AI：「开始模拟考口说」
+请告诉 AI：「开始模拟考口语」
 
 - Listen & Repeat：7 句跟读
 - Take an Interview：4 题即兴回答（每题 45 秒）
@@ -99,9 +99,9 @@ AI 会产生音档（需 edge-tts）或念出内容：
 
 AI 会：
 1. 批改阅读和听力（客观题）
-2. 评估口说（依 rubric）
+2. 评估口语（依 rubric）
 3. 批改写作（依 rubric）
-4. 产生成绩报告
+4. 生成成绩报告
 5. 更新 progress.json
 
 ---
@@ -225,7 +225,7 @@ def score_mock_test(target: str, test_num: int, reading: float, listening: float
     if total >= 5.0:
         print("  CEFR: C1 — 流畅学术交流 🌟")
     elif total >= 4.0:
-        print("  CEFR: B2 — 独立使用者 👍")
+        print("  CEFR: B2 — 独立用户 👍")
     elif total >= 3.0:
         print("  CEFR: B1 — 中级 📚")
     else:
@@ -276,7 +276,7 @@ def show_history(target: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TOEFL 模拟考模组")
+    parser = argparse.ArgumentParser(description="TOEFL 模拟考模块")
     parser.add_argument("--target", default="./toefl-prep/")
     parser.add_argument("--action", choices=["create", "score", "history"], default="create")
     parser.add_argument("--test", type=int, help="Test number (for scoring)")

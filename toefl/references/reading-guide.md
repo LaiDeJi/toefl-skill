@@ -1,6 +1,6 @@
-# 阅读模组使用指南
+# 阅读模块使用指南
 
-## 产生练习
+## 生成练习
 ```bash
 uv run python scripts/generate_reading.py --type all --output ./reading/ --difficulty hard
 ```
@@ -13,9 +13,9 @@ uv run python scripts/generate_reading.py --type all --output ./reading/ --diffi
 | Academic Passage | `--type academic` | Week 5+: medium/hard |
 
 ## AI 引导流程
-1. 确认使用者本周进度（读 progress.json）
+1. 确认用户本周进度（读 progress.json）
 2. 选择对应难度的练习
-3. 使用者作答后，逐题讲解错误选项为何错
+3. 用户作答后，逐题讲解错误选项为何错
 4. Complete the Words 错题 → 加入本周 Anki deck
 5. 记录正确率到 progress.json
 
