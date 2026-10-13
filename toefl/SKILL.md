@@ -84,7 +84,7 @@ python scripts/progress.py --action log --target ./toefl-prep/ --minutes 30 --se
 **觸發詞：** 「口說練習」、「練口說」、「speaking practice」
 **動作：**
 1. 執行 `scripts/speaking_coach.py` 產生題目
-2. 如需音檔，執行 `scripts/generate_listening.py --type repeat` 產生 TTS
+2. 如需音檔，執行 `scripts/generate_speaking.py` 產生 TTS（`--type repeat` / `interview`）
 3. 使用者完成後，讀取 `references/scoring-rubrics.md` 的口說段落進行評估
 
 ```bash
@@ -126,6 +126,7 @@ python scripts/writing_grader.py --type discussion --output ./toefl-prep/writing
 python scripts/generate_listening.py --type all --output ./toefl-prep/listening/
 python scripts/generate_listening.py --type conversation --output ./toefl-prep/listening/
 python scripts/generate_listening.py --type academic --output ./toefl-prep/listening/
+python scripts/generate_listening.py --type choose-response --output ./toefl-prep/listening/
 ```
 
 **依賴：** `pip install edge-tts`
