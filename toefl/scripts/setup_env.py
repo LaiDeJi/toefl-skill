@@ -21,7 +21,7 @@ version = "1.0.0"
 description = "TOEFL iBT 2026 Study Environment"
 requires-python = ">=3.10"
 dependencies = [
-    "edge-tts>=7.0.0",
+    "edge-tts>=7.3.1",
     "genanki>=0.13.0",
     "pydub>=0.25.1",
 ]
